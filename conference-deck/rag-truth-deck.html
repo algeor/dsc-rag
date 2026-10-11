@@ -1,0 +1,1199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Where RAG Truth Gets Lost</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" />
+
+<style>
+  :root {
+    --bg: #02030a;
+    --panel: #07111e;
+    --panel-2: #0a0d19;
+    --line: rgba(84, 96, 112, 0.28);
+    --grid: rgba(84, 96, 112, 0.14);
+    --cyan: #00e5ff;
+    --magenta: #ff2bd6;
+    --lime: #a6ff00;
+    --amber: #ffd166;
+    --red: #ff3b5f;
+    --violet: #8a5cff;
+    --white: #f8fafc;
+    --muted: #93a4b8;
+    --dim: #546070;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    --sans: "IBM Plex Sans", system-ui, sans-serif;
+    --disp: "Chakra Petch", var(--sans);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--white);
+    font-family: var(--sans);
+  }
+
+  /* ---- viewport + scaling stage ---------------------------------- */
+  #viewport {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      radial-gradient(circle at 85% 10%, rgba(0, 229, 255, 0.12), transparent 32%),
+      radial-gradient(circle at 8% 88%, rgba(255, 43, 214, 0.1), transparent 34%),
+      var(--bg);
+    background-size: 64px 64px, 64px 64px, auto, auto, auto;
+  }
+
+  #deck {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    transform-origin: center center;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 52px 64px 56px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(14px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  .slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide { transition: opacity 0.2s linear; transform: none; }
+  }
+
+  /* ---- shared chrome --------------------------------------------- */
+  .eyebrow {
+    font-family: var(--disp);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 14px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 9px; height: 9px;
+    background: currentColor;
+    box-shadow: 0 0 12px currentColor;
+    transform: rotate(45deg);
+  }
+  .eyebrow .seg { color: var(--dim); letter-spacing: 0.26em; }
+
+  h2.headline {
+    font-family: var(--disp);
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1.02;
+    margin: 0;
+    max-width: 1040px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  .headline .hl { color: var(--cyan); }
+  .headline .hl.lime { color: var(--lime); }
+  .headline .hl.mag { color: var(--magenta); }
+  .headline .hl.red { color: var(--red); }
+
+  .subhead {
+    margin: 14px 0 0;
+    font-size: 19px;
+    line-height: 1.4;
+    color: var(--muted);
+    max-width: 940px;
+  }
+
+  .body {
+    flex: 1;
+    min-height: 0;
+    margin-top: 26px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* progress + footer */
+  #hud {
+    position: absolute;
+    left: 64px; right: 64px; bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+    z-index: 20;
+  }
+  #progress {
+    flex: 1;
+    height: 2px;
+    background: var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  #progress i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: linear-gradient(90deg, var(--cyan), var(--lime));
+    width: 0;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px var(--cyan);
+  }
+  #counter b { color: var(--white); font-weight: 600; }
+  #hint { color: var(--dim); }
+  #hint kbd {
+    font-family: var(--mono);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--muted);
+  }
+
+  .corner {
+    position: absolute;
+    width: 18px; height: 18px;
+    border: 2px solid var(--line);
+    z-index: 20;
+  }
+  .corner.tl { top: 20px; left: 24px; border-right: 0; border-bottom: 0; }
+  .corner.tr { top: 20px; right: 24px; border-left: 0; border-bottom: 0; }
+  .corner.bl { bottom: 56px; left: 24px; border-right: 0; border-top: 0; }
+  .corner.br { bottom: 56px; right: 24px; border-left: 0; border-top: 0; }
+
+  /* ---- reusable atoms -------------------------------------------- */
+  .panel {
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .tag {
+    font-family: var(--disp);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .mono { font-family: var(--mono); }
+  code, .code {
+    font-family: var(--mono);
+    background: rgba(0, 229, 255, 0.08);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.86em;
+    color: var(--cyan);
+  }
+  .cite {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    color: var(--lime);
+    background: rgba(166, 255, 0, 0.1);
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+
+  /* ===== Slide 1 — title ========================================= */
+  .title-slide { justify-content: center; }
+  .title-slide .eyebrow { font-size: 15px; }
+  .big-title {
+    font-family: var(--disp);
+    font-weight: 700;
+    font-size: 76px;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 10px 0 0;
+    max-width: 900px;
+  }
+  .big-title .glow { color: var(--cyan); text-shadow: 0 0 30px rgba(0, 229, 255, 0.5); }
+  .title-slide .lead {
+    margin: 26px 0 0;
+    font-size: 21px;
+    color: var(--muted);
+    max-width: 620px;
+    line-height: 1.45;
+  }
+  .title-pipe {
+    position: absolute;
+    right: 64px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 420px;
+  }
+  .title-q {
+    margin-top: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-left: 3px solid var(--magenta);
+    background: rgba(255, 43, 214, 0.06);
+    border-radius: 0 10px 10px 0;
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--white);
+    max-width: 620px;
+  }
+  .title-q .qmark { color: var(--magenta); font-size: 22px; }
+
+  /* ===== generic two-column body ================================= */
+  .cols {
+    display: grid;
+    gap: 28px;
+    flex: 1;
+    min-height: 0;
+  }
+  .cols.c12 { grid-template-columns: 1fr 1fr; }
+  .cols.c-37 { grid-template-columns: 0.82fr 1.18fr; }
+  .cols.c-55 { grid-template-columns: 1fr 1fr; }
+
+  .figwrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .figwrap svg { width: 100%; height: auto; }
+  figure { margin: 0; display: flex; flex-direction: column; height: 100%; }
+  figcaption {
+    margin-top: 12px;
+    font-size: 13.5px;
+    color: var(--dim);
+    font-family: var(--mono);
+    letter-spacing: 0.02em;
+  }
+
+  .note-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  .note-list li {
+    display: flex;
+    gap: 14px;
+    font-size: 16.5px;
+    line-height: 1.4;
+    color: var(--white);
+  }
+  .note-list li .k {
+    flex: none;
+    font-family: var(--disp);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    width: 128px;
+    padding-top: 2px;
+  }
+  .note-list li .k.vi { color: var(--violet); }
+  .note-list li .k.mg { color: var(--magenta); }
+  .note-list li .k.am { color: var(--amber); }
+  .note-list li .k.lm { color: var(--lime); }
+  .note-list li .v { color: var(--muted); }
+  .note-list li .v b { color: var(--white); font-weight: 600; }
+
+  .callout {
+    margin-top: auto;
+    padding: 14px 18px;
+    border: 1px dashed rgba(255, 209, 102, 0.4);
+    background: rgba(255, 209, 102, 0.06);
+    border-radius: 10px;
+    font-size: 15px;
+    color: var(--amber);
+    line-height: 1.4;
+  }
+  .callout b { color: var(--white); }
+
+  /* ===== button-slide specific =================================== */
+  .stepper {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+  .step {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 9px 8px 10px;
+    background: var(--panel-2);
+    opacity: 0.4;
+    transition: opacity 0.3s;
+    overflow: hidden;
+  }
+  .step .n {
+    font-family: var(--disp);
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .step .nm {
+    font-family: var(--disp);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.15;
+    display: block;
+  }
+  .step.done { opacity: 1; }
+  .step.done .n { color: var(--accent, var(--cyan)); }
+  .step.active {
+    opacity: 1;
+    border-color: var(--accent, var(--cyan));
+    background: color-mix(in srgb, var(--accent, var(--cyan)) 14%, var(--panel-2));
+    box-shadow: 0 0 0 1px var(--accent, var(--cyan)), 0 0 24px -6px var(--accent, var(--cyan));
+  }
+  .step.active .n, .step.active .nm { color: var(--accent, var(--cyan)); }
+  .step.active::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 3px;
+    background: var(--accent, var(--cyan));
+    box-shadow: 0 0 12px var(--accent, var(--cyan));
+  }
+
+  .bslide-body { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; flex: 1; min-height: 0; }
+
+  .whatsnew { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+  .added-card {
+    border: 1px solid var(--accent, var(--cyan));
+    border-radius: 12px;
+    padding: 16px 18px;
+    background: color-mix(in srgb, var(--accent, var(--cyan)) 8%, var(--panel));
+  }
+  .added-card .tag { color: var(--accent, var(--cyan)); }
+  .added-card .added-text {
+    margin: 8px 0 0;
+    font-size: 17px;
+    line-height: 1.4;
+    color: var(--white);
+  }
+  .added-card .added-text b { color: var(--accent, var(--cyan)); }
+
+  .mech {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mech svg { width: 100%; height: auto; max-height: 300px; }
+
+  /* answer card (right column) */
+  .answer-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+  }
+  .answer-card .ac-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ac-head .who { font-family: var(--disp); font-size: 12px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .verdict {
+    font-family: var(--disp);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid currentColor;
+  }
+  .verdict.bad { color: var(--red); background: rgba(255, 59, 95, 0.12); }
+  .verdict.warn { color: var(--amber); background: rgba(255, 209, 102, 0.12); }
+  .verdict.ok { color: var(--cyan); background: rgba(0, 229, 255, 0.12); }
+  .verdict.good { color: var(--lime); background: rgba(166, 255, 0, 0.12); }
+  .verdict.mag { color: var(--magenta); background: rgba(255, 43, 214, 0.12); }
+
+  .ac-answer {
+    padding: 16px 18px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--white);
+    flex: 1;
+    min-height: 0;
+  }
+  .ac-answer .tbl { font-family: var(--mono); color: var(--cyan); font-weight: 600; }
+  .ac-answer .tbl.dep { color: var(--red); text-decoration: line-through; text-decoration-color: rgba(255,59,95,.6); }
+  .ac-answer .hot { color: var(--amber); font-weight: 600; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    border-top: 1px solid var(--line);
+  }
+  .metric { padding: 13px 18px; }
+  .metric + .metric { border-left: 1px solid var(--line); }
+  .metric .tag { font-size: 10px; }
+  .conf-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .conf-track { flex: 1; height: 7px; border-radius: 4px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .conf-track i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--cyan), var(--lime)); box-shadow: 0 0 10px rgba(0,229,255,.5); transition: width .5s; }
+  .conf-num { font-family: var(--disp); font-weight: 700; font-size: 20px; min-width: 60px; }
+  .rank-val { font-family: var(--disp); font-weight: 700; font-size: 22px; margin-top: 6px; }
+  .rank-val small { font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: .05em; }
+  .delta { font-size: 12.5px; color: var(--muted); font-family: var(--mono); margin-top: 4px; }
+  .delta .up { color: var(--lime); }
+  .delta .flat { color: var(--dim); }
+
+  /* corpus grid (slide 5) */
+  .corpus { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+  .doc {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 9px;
+    background: var(--panel-2);
+  }
+  .doc .did { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .doc .dt { font-size: 12.5px; margin-top: 2px; line-height: 1.2; color: var(--white); }
+  .doc .ds { font-family: var(--disp); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; margin-top: 5px; }
+  .doc.dep { border-color: rgba(255,59,95,.5); background: rgba(255,59,95,.07); }
+  .doc.dep .ds { color: var(--red); }
+  .doc.key { border-color: rgba(0,229,255,.5); background: rgba(0,229,255,.07); }
+  .doc.key .ds { color: var(--cyan); }
+  .doc.pol { border-color: rgba(166,255,0,.4); }
+  .doc.pol .ds { color: var(--lime); }
+  .doc .ds.act { color: var(--dim); }
+
+  .legend { display: flex; gap: 18px; margin-top: 14px; font-size: 13px; color: var(--muted); font-family: var(--mono); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 11px; height: 11px; border-radius: 3px; border: 1px solid; }
+  .legend i.dep { border-color: var(--red); background: rgba(255,59,95,.2); }
+  .legend i.key { border-color: var(--cyan); background: rgba(0,229,255,.2); }
+  .legend i.pol { border-color: var(--lime); background: rgba(166,255,0,.2); }
+
+  .pillrow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .pill {
+    font-family: var(--disp);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+  .pill.on { color: var(--bg); }
+
+  /* takeaway pillars */
+  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; }
+  .pillar { border-radius: 12px; border: 1px solid var(--line); padding: 16px; background: var(--panel-2); }
+  .pillar .pn { font-family: var(--disp); font-weight: 700; font-size: 15px; letter-spacing: .04em; }
+  .pillar .pd { font-size: 13.5px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
+
+  svg text { font-family: var(--mono); }
+  .svg-label { font-family: var(--disp); font-weight: 600; }
+</style>
+
+<div id="viewport">
+  <div id="deck"></div>
+</div>
+
+<div id="hud">
+  <span id="counter"><b>01</b> / 14</span>
+  <div id="progress"><i></i></div>
+  <span id="hint"><kbd>←</kbd> <kbd>→</kbd> navigate &nbsp;·&nbsp; <kbd>F</kbd> fullscreen</span>
+</div>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+
+<script>
+/* ======================================================================
+   DATA — the real demo output, captured by running scripts/demo.py
+   ====================================================================== */
+const CONF  = [32, 38, 60, 66, 67, 82, 94, 99];
+const RANK  = ["#4", "#3", "#2", "#1", "#1", "#1", "#1", "#1"];
+
+const BUTTONS = [
+  {
+    n: 1, key: "naive", name: "Naive search", accent: "var(--red)",
+    sub: "Raw BM25 over all 16 documents. Whatever ranks #1 becomes the answer — no filter, no policy, no check.",
+    addedTag: "Baseline — nothing added",
+    added: "Plain keyword relevance (BM25) across <b>every</b> document, stale or not. The system trusts rank&nbsp;#1 blindly.",
+    verdict: "Confidently wrong", vclass: "bad",
+    answer: 'Use <span class="tbl dep">finance.daily_revenue</span> [01_legacy] — it is the top source retrieved. The canonical contract [02_contract] is outranked, down at position&nbsp;4. <span class="hot">Yesterday\'s data is ready to use.</span>',
+    delta: '<span class="flat">first run · no delta</span>',
+    mech: mechNaive(),
+    cap: "A deprecated 2024 guide and an old Slack message outrank the live contract.",
+  },
+  {
+    n: 2, key: "indexing", name: "Indexing", accent: "var(--violet)",
+    sub: "Index the title, metadata and body together as one searchable chunk — a richer surface to match against.",
+    addedTag: "+ Indexing",
+    added: "Each doc is indexed as <b>title + metadata + text</b>, not just raw body. Better matching — but stale docs are still in the pool.",
+    verdict: "Still wrong", vclass: "bad",
+    answer: 'Use <span class="tbl dep">finance.daily_revenue</span> [01_legacy] — it is the top source retrieved. The canonical contract [02_contract] climbed to position&nbsp;3. <span class="hot">Yesterday\'s data is ready to use.</span>',
+    delta: 'contract <span class="up">#4 → #3</span> · still outranked',
+    mech: mechIndexing(),
+    cap: "Richer index lifts the contract one place — the deprecated guide still wins.",
+  },
+  {
+    n: 3, key: "metadata", name: "Metadata filter", accent: "var(--cyan)",
+    sub: "Restrict retrieval to the user's real scope: EU · prod · active · internal. Deprecated sources are excluded before ranking.",
+    addedTag: "+ Metadata filter",
+    added: "Keep only <b>EU / prod / active / internal</b> docs. The deprecated guide and old Slack shortcut are <b>filtered out entirely</b>.",
+    verdict: "Right table", vclass: "ok",
+    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — the canonical contract climbed to position&nbsp;2, above the stale guides. Values are local currency: convert before cross-currency EU totals [04_metric]. Nothing retrieved confirms yesterday\'s freshness.',
+    delta: 'contract <span class="up">#3 → #2</span> · stale guides dropped',
+    mech: mechMetadata(),
+    cap: "Scoping removes the two deprecated sources — the answer flips to the right table.",
+  },
+  {
+    n: 4, key: "rewrite", name: "Query expansion", accent: "var(--violet)",
+    sub: "Add domain vocabulary the user didn't type — contract, VAT, refunds, FX, completeness — and fuse the result sets.",
+    addedTag: "+ Query expansion",
+    added: "Expand the query with <b>domain terms</b> (contract, VAT, refunds, currency, completeness) and fuse rankings with reciprocal rank fusion.",
+    verdict: "Right table · #1", vclass: "ok",
+    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — the canonical contract is now the <span class="hot">top source</span>. Values are local currency: convert before cross-currency EU totals [04_metric]. Nothing retrieved confirms yesterday\'s freshness.',
+    delta: 'contract <span class="up">#2 → #1</span>',
+    mech: mechExpansion(),
+    cap: "Domain expansion pulls the contract and metric definition to the top.",
+  },
+  {
+    n: 5, key: "rerank", name: "Reranking", accent: "var(--amber)",
+    sub: "Re-score the top candidates by evidence quality — a cross-encoder (neural) or a deterministic reranker (offline).",
+    addedTag: "+ Reranking",
+    added: "Re-score the shortlist by <b>evidence quality</b>: active contracts up, deprecated down, policies that answer the question up.",
+    verdict: "Refined", vclass: "warn",
+    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — the canonical contract holds the <span class="hot">top source</span>. Values are local currency: convert before cross-currency EU totals [04_metric]. Nothing retrieved confirms yesterday\'s freshness.',
+    delta: 'order refined · contract holds <span class="flat">#1</span>',
+    mech: mechRerank(),
+    cap: "Reranking cleans the shortlist; the contract stays first, weak evidence sinks.",
+  },
+  {
+    n: 6, key: "authority", name: "Authority policy", accent: "var(--magenta)",
+    sub: "When sources conflict, authority decides: contract ▸ migration ▸ policy ▸ incident ▸ catalog ▸ Slack ▸ snapshot.",
+    addedTag: "+ Authority policy",
+    added: "Apply a <b>source-authority order</b> after relevance. Governance docs — the <b>freshness policy</b> — now surface in the evidence.",
+    verdict: "Grounded", vclass: "mag",
+    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical contract, top source. Values are local currency: convert before EU totals [04_metric]. <span class="hot">Freshness policy [09_freshness] says yesterday is trustworthy only after a live partition check — that check has not run yet.</span>',
+    delta: 'policies surface · confidence <span class="up">67 → 82</span>',
+    mech: mechAuthority(),
+    cap: "Authority lifts governance: the freshness policy appears and flags the open question.",
+  },
+  {
+    n: 7, key: "live", name: "Add live check", accent: "var(--lime)",
+    sub: "Same retrieval. Now run a parameterized SQL query against operational state for the requested business date.",
+    addedTag: "+ Live partition check",
+    added: "A fixed, parameterized SQL read of <b>partition readiness</b> at query time. Docs explain meaning; <b>live state</b> decides applicability.",
+    verdict: "Not ready", vclass: "warn",
+    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical, top source. <span class="hot">Live check for 2026-10-09: NOT ready</span> {DE: incomplete, FR: complete, PL: complete}. Do not trust yesterday\'s data yet. This is partition readiness, not proof every FX / quality check passed.',
+    delta: 'readiness resolved · confidence <span class="up">82 → 94</span>',
+    mech: mechLive(),
+    cap: "Correct table, but a live check blocks it: Germany's partition is incomplete.",
+  },
+  {
+    n: 8, key: "complete", name: "Mark complete", accent: "var(--lime)",
+    sub: "Nothing in the pipeline changes. Only the operational state flips: Germany's partition lands as complete.",
+    addedTag: "No pipeline change — state flips",
+    added: "We did <b>not</b> touch retrieval or any document. We flipped <b>operational state</b> (DE → complete). The answer changes because the world changed.",
+    verdict: "Ready · caveats", vclass: "good",
+    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical, top source. <span class="hot">Live check for 2026-10-09: all expected demo partitions complete</span> {DE: complete, FR: complete, PL: complete}. Still verify FX and other data-quality gates before publishing.',
+    delta: 'state flip only · confidence <span class="up">94 → 99</span>',
+    mech: mechComplete(),
+    cap: "No document changed — the readiness decision flips purely on live state.",
+  },
+];
+
+/* ======================================================================
+   MECHANISM DIAGRAMS (inline SVG)
+   ====================================================================== */
+function arrowDefs(id, color) {
+  return `<defs><marker id="${id}" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto">
+    <polygon points="0,0 8,4 0,8" fill="${color}"/></marker></defs>`;
+}
+
+function mechNaive() {
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Raw BM25 ranks a deprecated guide first">
+    ${arrowDefs('aN', '#ff3b5f')}
+    <text x="20" y="28" class="svg-label" font-size="13" fill="#93a4b8" letter-spacing="2">16 DOCS · UNFILTERED</text>
+    <g>
+      ${[0,1,2,3,4,5,6,7].map((i)=>{const x=20+(i%4)*58,y=44+Math.floor(i/4)*34;const dep=i===0||i===3;return `<rect x="${x}" y="${y}" width="50" height="26" rx="4" fill="${dep?'rgba(255,59,95,.15)':'#0a0d19'}" stroke="${dep?'#ff3b5f':'#2a3444'}"/>`;}).join('')}
+      <text x="250" y="80" font-size="12" fill="#546070">…</text>
+    </g>
+    <line x1="20" y1="150" x2="540" y2="150" stroke="#2a3444" stroke-dasharray="3 4"/>
+    <text x="20" y="172" class="svg-label" font-size="13" fill="#ff3b5f" letter-spacing="2">BM25 RANKING →</text>
+    ${[
+      ['#1  01_legacy','deprecated guide','#ff3b5f',188],
+      ['#2  07_slack_old','deprecated Slack','#ff3b5f',222],
+      ['#4  02_contract','the real contract','#546070',256],
+    ].map(([a,b,c,y])=>`
+      <rect x="20" y="${y}" width="300" height="26" rx="5" fill="${c==='#ff3b5f'?'rgba(255,59,95,.12)':'#0a0d19'}" stroke="${c}"/>
+      <text x="32" y="${+y+17}" font-size="13" fill="${c==='#546070'?'#f8fafc':c}" font-weight="600">${a}</text>
+      <text x="150" y="${+y+17}" font-size="12" fill="#93a4b8">${b}</text>
+    `).join('')}
+    <path d="M335 201 L430 201" stroke="#ff3b5f" stroke-width="2" marker-end="url(#aN)"/>
+    <rect x="434" y="184" width="106" height="36" rx="7" fill="rgba(255,59,95,.12)" stroke="#ff3b5f"/>
+    <text x="487" y="200" font-size="11" fill="#ff3b5f" text-anchor="middle" class="svg-label">ANSWER =</text>
+    <text x="487" y="214" font-size="10" fill="#f8fafc" text-anchor="middle">rank #1</text>
+  </svg>`;
+}
+
+function mechIndexing() {
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Document indexed as title plus metadata plus text">
+    ${arrowDefs('aI', '#8a5cff')}
+    <rect x="20" y="60" width="190" height="180" rx="10" fill="#07111e" stroke="#2a3444"/>
+    <text x="36" y="88" class="svg-label" font-size="12" fill="#93a4b8" letter-spacing="2">RAW DOC</text>
+    <rect x="36" y="100" width="158" height="30" rx="5" fill="#0a0d19" stroke="#2a3444"/>
+    <text x="46" y="120" font-size="12" fill="#546070">body text only</text>
+    <path d="M224 150 L286 150" stroke="#8a5cff" stroke-width="2" marker-end="url(#aI)"/>
+    <text x="255" y="140" font-size="11" fill="#8a5cff" text-anchor="middle">index</text>
+    <rect x="300" y="40" width="240" height="220" rx="10" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
+    <text x="318" y="68" class="svg-label" font-size="12" fill="#8a5cff" letter-spacing="2">SEARCHABLE CHUNK</text>
+    ${[
+      ['title','EU net revenue data contract'],
+      ['metadata','EU · prod · active · internal'],
+      ['text','Canonical asset: fct_net_revenue_v2 …'],
+    ].map(([k,v],i)=>`
+      <rect x="316" y="${86+i*52}" width="208" height="42" rx="6" fill="#0a0d19" stroke="#3a3060"/>
+      <text x="328" y="${104+i*52}" font-size="11" fill="#8a5cff" class="svg-label" letter-spacing="1">${k.toUpperCase()}</text>
+      <text x="328" y="${120+i*52}" font-size="11" fill="#cdd6e4">${v}</text>
+    `).join('')}
+  </svg>`;
+}
+
+function mechMetadata() {
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Metadata filter rejects deprecated documents">
+    ${arrowDefs('aM', '#00e5ff')}
+    <text x="20" y="30" class="svg-label" font-size="13" fill="#93a4b8" letter-spacing="2">16 DOCS</text>
+    ${[0,1,2,3,4,5].map(i=>`<rect x="20" y="${46+i*22}" width="110" height="16" rx="3" fill="#0a0d19" stroke="#2a3444"/>`).join('')}
+    <path d="M140 110 L196 110" stroke="#00e5ff" stroke-width="2" marker-end="url(#aM)"/>
+    <polygon points="210,54 330,54 300,120 240,120" fill="rgba(0,229,255,.08)" stroke="#00e5ff"/>
+    <text x="270" y="88" font-size="11" fill="#00e5ff" text-anchor="middle" class="svg-label">EU · PROD</text>
+    <text x="270" y="104" font-size="11" fill="#00e5ff" text-anchor="middle" class="svg-label">ACTIVE · INT</text>
+    <path d="M300 128 L300 170" stroke="#00e5ff" stroke-width="2" marker-end="url(#aM)"/>
+    <text x="356" y="92" font-size="12" fill="#546070">filter</text>
+    <rect x="236" y="178" width="130" height="30" rx="6" fill="rgba(0,229,255,.1)" stroke="#00e5ff"/>
+    <text x="301" y="198" font-size="12" fill="#00e5ff" text-anchor="middle" font-weight="600">scoped pool</text>
+    <g>
+      <rect x="396" y="60" width="150" height="40" rx="7" fill="rgba(255,59,95,.1)" stroke="#ff3b5f"/>
+      <text x="408" y="78" font-size="12" fill="#ff3b5f" font-weight="600">01_legacy ✕</text>
+      <text x="408" y="92" font-size="10" fill="#93a4b8">deprecated → rejected</text>
+      <rect x="396" y="108" width="150" height="40" rx="7" fill="rgba(255,59,95,.1)" stroke="#ff3b5f"/>
+      <text x="408" y="126" font-size="12" fill="#ff3b5f" font-weight="600">07_slack_old ✕</text>
+      <text x="408" y="140" font-size="10" fill="#93a4b8">deprecated → rejected</text>
+    </g>
+    <path d="M300 193 L420 193" stroke="#00e5ff" stroke-width="2" marker-end="url(#aM)"/>
+    <rect x="424" y="176" width="120" height="34" rx="7" fill="#0a0d19" stroke="#00e5ff"/>
+    <text x="484" y="197" font-size="12" fill="#f8fafc" text-anchor="middle">02_contract ↑</text>
+  </svg>`;
+}
+
+function mechExpansion() {
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Query expanded with domain terms then fused">
+    ${arrowDefs('aE', '#8a5cff')}
+    <rect x="20" y="36" width="200" height="34" rx="7" fill="#0a0d19" stroke="#2a3444"/>
+    <text x="32" y="57" font-size="12" fill="#cdd6e4">"EU net revenue table?"</text>
+    <path d="M224 53 L270 53" stroke="#8a5cff" stroke-width="2" marker-end="url(#aE)"/>
+    <text x="300" y="30" class="svg-label" font-size="11" fill="#8a5cff" letter-spacing="2">+ DOMAIN TERMS</text>
+    ${['contract','VAT','refunds','currency / FX','completeness'].map((t,i)=>`
+      <rect x="${278+(i%3)*92}" y="${40+Math.floor(i/3)*34}" width="86" height="26" rx="13" fill="rgba(138,92,255,.12)" stroke="#8a5cff"/>
+      <text x="${321+(i%3)*92}" y="${57+Math.floor(i/3)*34}" font-size="11" fill="#c4b5ff" text-anchor="middle">${t}</text>
+    `).join('')}
+    ${[0,1,2].map(i=>`
+      <rect x="40" y="${150+i*34}" width="150" height="26" rx="5" fill="#0a0d19" stroke="#3a3060"/>
+      <text x="52" y="${167+i*34}" font-size="11" fill="#93a4b8">query variant ${i+1}</text>
+      <path d="M194 ${163+i*34} L250 ${215}" stroke="#3a3060" stroke-width="1.5"/>
+    `).join('')}
+    <rect x="252" y="196" width="130" height="40" rx="8" fill="rgba(138,92,255,.1)" stroke="#8a5cff"/>
+    <text x="317" y="214" font-size="12" fill="#8a5cff" text-anchor="middle" class="svg-label">RRF FUSE</text>
+    <text x="317" y="229" font-size="10" fill="#93a4b8" text-anchor="middle">reciprocal rank</text>
+    <path d="M386 216 L446 216" stroke="#8a5cff" stroke-width="2" marker-end="url(#aE)"/>
+    <rect x="450" y="199" width="94" height="34" rx="7" fill="#0a0d19" stroke="#00e5ff"/>
+    <text x="497" y="220" font-size="12" fill="#00e5ff" text-anchor="middle">02_contract #1</text>
+  </svg>`;
+}
+
+function mechRerank() {
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Reranking lifts high quality evidence">
+    ${arrowDefs('aR', '#ffd166')}
+    <text x="70" y="34" class="svg-label" font-size="12" fill="#93a4b8" letter-spacing="2">SHORTLIST</text>
+    <text x="420" y="34" class="svg-label" font-size="12" fill="#ffd166" letter-spacing="2">RERANKED</text>
+    ${[
+      ['02_contract','#00e5ff',0,0],
+      ['11_lineage','#546070',1,2],
+      ['14_owner','#546070',2,3],
+      ['04_metric','#00e5ff',3,1],
+    ].map(([id,c,from,to])=>`
+      <rect x="40" y="${50+from*52}" width="150" height="36" rx="6" fill="#0a0d19" stroke="${c}"/>
+      <text x="52" y="${72+from*52}" font-size="12" fill="${c==='#546070'?'#93a4b8':c}" font-weight="600">${id}</text>
+      <rect x="390" y="${50+to*52}" width="150" height="36" rx="6" fill="${c==='#00e5ff'?'rgba(0,229,255,.1)':'#0a0d19'}" stroke="${c}"/>
+      <text x="402" y="${72+to*52}" font-size="12" fill="${c==='#546070'?'#93a4b8':c}" font-weight="600">${id}</text>
+      <path d="M194 ${68+from*52} L386 ${68+to*52}" stroke="${c==='#546070'?'#2a3444':'#ffd166'}" stroke-width="${c==='#546070'?1.2:2}" ${c==='#546070'?'stroke-dasharray="3 4"':'marker-end="url(#aR)"'}/>
+    `).join('')}
+    <text x="250" y="286" font-size="11" fill="#ffd166" text-anchor="middle">quality score reorders candidates</text>
+  </svg>`;
+}
+
+function mechAuthority() {
+  const tiers = [['contract','#00e5ff'],['migration','#8a5cff'],['policy','#a6ff00'],['incident','#ffd166'],['catalog','#93a4b8'],['Slack','#ff2bd6'],['snapshot','#546070']];
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Authority order from contract down to snapshot">
+    <text x="20" y="26" class="svg-label" font-size="12" fill="#ff2bd6" letter-spacing="2">AUTHORITY ORDER (applied after relevance)</text>
+    ${tiers.map(([t,c],i)=>`
+      <rect x="${20+i*2}" y="${44+i*32}" width="${300-i*2}" height="26" rx="5" fill="${i===0?'rgba(0,229,255,.12)':i===2?'rgba(166,255,0,.1)':'#0a0d19'}" stroke="${c}"/>
+      <text x="34" y="${61+i*32}" font-size="12" fill="${c}" font-weight="600">${i===0?'▸ ':''}${t}</text>
+      <text x="${300-i*2}" y="${61+i*32}" font-size="11" fill="#546070" text-anchor="end" dx="-10">tier ${i}</text>
+    `).join('')}
+    <rect x="360" y="96" width="190" height="120" rx="10" fill="rgba(166,255,0,.07)" stroke="#a6ff00"/>
+    <text x="376" y="122" class="svg-label" font-size="11" fill="#a6ff00" letter-spacing="2">NOW SURFACED</text>
+    <text x="376" y="150" font-size="13" fill="#f8fafc" font-weight="600">09_freshness</text>
+    <text x="376" y="170" font-size="11" fill="#93a4b8">"trust yesterday only</text>
+    <text x="376" y="186" font-size="11" fill="#93a4b8">after a live check"</text>
+    <text x="376" y="206" font-size="11" fill="#a6ff00">→ opens the real question</text>
+  </svg>`;
+}
+
+function mechLive() {
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Live SQL check on partition readiness">
+    ${arrowDefs('aL', '#a6ff00')}
+    ${arrowDefs('aLr', '#ff3b5f')}
+    <rect x="20" y="70" width="210" height="90" rx="9" fill="#030712" stroke="#a6ff00"/>
+    <text x="36" y="94" class="svg-label" font-size="11" fill="#a6ff00" letter-spacing="2">PARAMETERIZED SQL</text>
+    <text x="36" y="118" font-size="11" fill="#cdd6e4">asset = fct_net_revenue_v2</text>
+    <text x="36" y="136" font-size="11" fill="#cdd6e4">business_date = 2026-10-09</text>
+    <path d="M234 115 L288 115" stroke="#a6ff00" stroke-width="2" marker-end="url(#aL)"/>
+    ${[
+      ['DE','incomplete','#ff3b5f',56],
+      ['FR','complete','#a6ff00',110],
+      ['PL','complete','#a6ff00',164],
+    ].map(([c,s,col,y])=>`
+      <rect x="296" y="${y}" width="140" height="40" rx="7" fill="${col==='#ff3b5f'?'rgba(255,59,95,.12)':'rgba(166,255,0,.1)'}" stroke="${col}"/>
+      <text x="312" y="${+y+25}" font-size="14" fill="${col}" font-weight="700">${c}</text>
+      <text x="350" y="${+y+25}" font-size="12" fill="#cdd6e4">${s}</text>
+    `).join('')}
+    <path d="M440 76 L480 110" stroke="#ff3b5f" stroke-width="2" marker-end="url(#aLr)"/>
+    <path d="M440 130 L480 118" stroke="#a6ff00" stroke-width="1.4"/>
+    <path d="M440 184 L480 126" stroke="#a6ff00" stroke-width="1.4"/>
+    <rect x="470" y="96" width="78" height="56" rx="9" fill="rgba(255,59,95,.12)" stroke="#ff3b5f"/>
+    <text x="509" y="120" font-size="11" fill="#ff3b5f" text-anchor="middle" class="svg-label">GATE</text>
+    <text x="509" y="138" font-size="11" fill="#ff3b5f" text-anchor="middle">NOT READY</text>
+    <text x="300" y="226" font-size="11" fill="#93a4b8">one incomplete partition blocks the whole answer</text>
+  </svg>`;
+}
+
+function mechComplete() {
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Operational state flips Germany to complete">
+    ${arrowDefs('aC', '#8a5cff')}
+    <text x="20" y="40" class="svg-label" font-size="12" fill="#93a4b8" letter-spacing="2">BEFORE</text>
+    ${[['DE','incomplete','#ff3b5f'],['FR','complete','#a6ff00'],['PL','complete','#a6ff00']].map(([c,s,col],i)=>`
+      <rect x="20" y="${54+i*42}" width="150" height="34" rx="6" fill="${col==='#ff3b5f'?'rgba(255,59,95,.1)':'#0a0d19'}" stroke="${col}"/>
+      <text x="34" y="${75+i*42}" font-size="13" fill="${col}" font-weight="700">${c}</text><text x="72" y="${75+i*42}" font-size="11" fill="#93a4b8">${s}</text>
+    `).join('')}
+    <rect x="210" y="110" width="140" height="56" rx="9" fill="rgba(138,92,255,.1)" stroke="#8a5cff"/>
+    <text x="280" y="134" font-size="11" fill="#8a5cff" text-anchor="middle" class="svg-label">STATE MUTATION</text>
+    <text x="280" y="152" font-size="11" fill="#cdd6e4" text-anchor="middle">--set-de complete</text>
+    <path d="M174 128 L206 134" stroke="#8a5cff" stroke-width="1.6"/>
+    <path d="M352 138 L388 138" stroke="#8a5cff" stroke-width="2" marker-end="url(#aC)"/>
+    <text x="398" y="40" class="svg-label" font-size="12" fill="#a6ff00" letter-spacing="2">AFTER</text>
+    ${[['DE','complete'],['FR','complete'],['PL','complete']].map(([c,s],i)=>`
+      <rect x="398" y="${54+i*42}" width="150" height="34" rx="6" fill="rgba(166,255,0,.1)" stroke="#a6ff00"/>
+      <text x="412" y="${75+i*42}" font-size="13" fill="#a6ff00" font-weight="700">${c}</text><text x="450" y="${75+i*42}" font-size="11" fill="#cdd6e4">${s}${c==='DE'?' ✓':''}</text>
+    `).join('')}
+    <text x="280" y="210" font-size="11" fill="#93a4b8" text-anchor="middle">same pipeline · same docs · the answer flips to READY</text>
+  </svg>`;
+}
+
+/* ======================================================================
+   CONCEPT SLIDES
+   ====================================================================== */
+function slideTitle() {
+  return `<section class="slide title-slide">
+    <p class="eyebrow">Data Stack Conference <span class="seg">·</span> live demo</p>
+    <h1 class="big-title">Where <span class="glow">RAG&nbsp;truth</span><br>gets lost</h1>
+    <p class="lead">Stale docs, missing context, and runtime state — and the eight layers that turn a confident guess into an honest, grounded answer.</p>
+    <div class="title-q"><span class="qmark">?</span><span>"Which table should I use for EU net revenue, and can I trust yesterday's data?"</span></div>
+    <figure class="title-pipe">
+      <svg viewBox="0 0 420 420" role="img" aria-label="Documents and live state feed a retriever that produces a grounded answer">
+        <defs><marker id="aT" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#00e5ff"/></marker>
+        <marker id="aT2" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#a6ff00"/></marker></defs>
+        <rect x="40" y="30" width="150" height="78" rx="12" fill="rgba(0,229,255,.07)" stroke="#00e5ff"/>
+        <text x="60" y="60" class="svg-label" font-size="15" fill="#00e5ff">Documents</text>
+        <text x="60" y="82" font-size="11" fill="#93a4b8">contracts · guides</text>
+        <text x="60" y="97" font-size="11" fill="#93a4b8">Slack · incidents</text>
+        <rect x="230" y="166" width="150" height="78" rx="12" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
+        <text x="250" y="196" class="svg-label" font-size="15" fill="#8a5cff">Retriever</text>
+        <text x="250" y="218" font-size="11" fill="#93a4b8">ranked evidence</text>
+        <text x="250" y="233" font-size="11" fill="#93a4b8">+ full trace</text>
+        <rect x="40" y="300" width="160" height="82" rx="12" fill="rgba(166,255,0,.07)" stroke="#a6ff00"/>
+        <text x="60" y="330" class="svg-label" font-size="15" fill="#a6ff00">Live state</text>
+        <text x="60" y="352" font-size="11" fill="#93a4b8">partition readiness</text>
+        <text x="60" y="367" font-size="11" fill="#93a4b8">from SQLite</text>
+        <path d="M190 85 C 260 100, 300 130, 305 160" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aT)"/>
+        <path d="M200 342 C 270 342, 300 300, 305 250" stroke="#a6ff00" stroke-width="2" fill="none" marker-end="url(#aT2)"/>
+      </svg>
+    </figure>
+  </section>`;
+}
+
+function slideWhatIsRag() {
+  return `<section class="slide">
+    <p class="eyebrow">Foundation <span class="seg">·</span> 01 of 03</p>
+    <h2 class="headline">RAG = give the model <span class="hl">your evidence</span> before it answers</h2>
+    <p class="subhead">A plain LLM answers from frozen training memory — fluent, but ungrounded. RAG retrieves relevant documents at query time and makes the model answer <em>from them</em>, with citations.</p>
+    <div class="cols c12 body">
+      <figure class="figwrap">
+        <svg viewBox="0 0 560 300" role="img" aria-label="Retrieve augment generate loop grounded in a knowledge base">
+          <defs><marker id="aG" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#00e5ff"/></marker></defs>
+          <rect x="18" y="128" width="120" height="46" rx="9" fill="#0a0d19" stroke="#93a4b8"/>
+          <text x="78" y="156" font-size="13" fill="#f8fafc" text-anchor="middle" font-weight="600">Question</text>
+          <rect x="190" y="40" width="150" height="64" rx="10" fill="rgba(0,229,255,.07)" stroke="#00e5ff"/>
+          <text x="265" y="66" font-size="13" fill="#00e5ff" text-anchor="middle" class="svg-label">RETRIEVE</text>
+          <text x="265" y="86" font-size="11" fill="#93a4b8" text-anchor="middle">top-k relevant chunks</text>
+          <rect x="190" y="200" width="150" height="60" rx="10" fill="#0a0d19" stroke="#2a3444"/>
+          <text x="265" y="226" font-size="12" fill="#cdd6e4" text-anchor="middle" class="svg-label">KNOWLEDGE BASE</text>
+          <text x="265" y="245" font-size="11" fill="#93a4b8" text-anchor="middle">indexed documents</text>
+          <rect x="392" y="128" width="150" height="46" rx="10" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
+          <text x="467" y="150" font-size="13" fill="#8a5cff" text-anchor="middle" class="svg-label">GENERATE</text>
+          <text x="467" y="166" font-size="10" fill="#93a4b8" text-anchor="middle">answer from evidence</text>
+          <path d="M138 148 C 160 130, 172 95, 189 80" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aG)"/>
+          <path d="M265 200 L265 108" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aG)"/>
+          <text x="276" y="155" font-size="10" fill="#546070">search</text>
+          <path d="M340 72 C 372 90, 384 110, 400 126" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aG)"/>
+          <text x="356" y="150" font-size="10" fill="#546070" transform="rotate(0)">+question</text>
+          <path d="M467 174 C 467 240, 360 285, 160 265 C 120 262, 110 220, 118 178" stroke="#8a5cff" stroke-width="1.6" fill="none" stroke-dasharray="4 5"/>
+          <text x="300" y="292" font-size="10" fill="#546070" text-anchor="middle">cited, grounded answer back to the user</text>
+        </svg>
+        <figcaption>Retrieve → augment the prompt → generate. The knowledge base, not the model's memory, is the source of truth.</figcaption>
+      </figure>
+      <ul class="note-list" style="justify-content:center">
+        <li><span class="k">Why</span><span class="v">LLM memory is <b>frozen and lossy</b> — it invents plausible specifics. Your contracts, tables and policies aren't in it.</span></li>
+        <li><span class="k vi">Grounding</span><span class="v">Retrieval injects the <b>actual source text</b>, so claims can be cited and checked instead of trusted.</span></li>
+        <li><span class="k mg">The catch</span><span class="v">RAG is only as honest as what it retrieves. <b>Garbage in, confident garbage out</b> — which is exactly the demo.</span></li>
+      </ul>
+    </div>
+  </section>`;
+}
+
+function slideChunkIndex() {
+  return `<section class="slide">
+    <p class="eyebrow">Foundation <span class="seg">·</span> 02 of 03 <span class="seg">·</span> chunking &amp; indexing</p>
+    <h2 class="headline">Before you retrieve: <span class="hl">chunk</span> the docs, then <span class="hl">index</span> them</h2>
+    <div class="cols c-37 body">
+      <figure class="figwrap">
+        <svg viewBox="0 0 440 320" role="img" aria-label="A document is chunked then indexed lexically and densely">
+          <defs><marker id="aCk" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#8a5cff"/></marker></defs>
+          <rect x="20" y="20" width="110" height="150" rx="9" fill="#0a0d19" stroke="#2a3444"/>
+          <text x="36" y="44" class="svg-label" font-size="11" fill="#93a4b8">DOCUMENT</text>
+          ${[0,1,2,3,4].map(i=>`<rect x="34" y="${56+i*20}" width="82" height="12" rx="2" fill="#1a2230"/>`).join('')}
+          <path d="M134 95 L170 95" stroke="#8a5cff" stroke-width="2" marker-end="url(#aCk)"/>
+          <text x="152" y="86" font-size="10" fill="#8a5cff" text-anchor="middle">chunk</text>
+          ${[0,1,2].map(i=>`<rect x="180" y="${34+i*48}" width="96" height="36" rx="6" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/><text x="228" y="${56+i*48}" font-size="11" fill="#c4b5ff" text-anchor="middle">chunk ${i+1}</text>`).join('')}
+          <path d="M280 95 L316 95" stroke="#8a5cff" stroke-width="2" marker-end="url(#aCk)"/>
+          <rect x="322" y="30" width="100" height="44" rx="8" fill="#0a0d19" stroke="#00e5ff"/>
+          <text x="372" y="50" font-size="11" fill="#00e5ff" text-anchor="middle" class="svg-label">BM25</text>
+          <text x="372" y="65" font-size="9" fill="#93a4b8" text-anchor="middle">lexical</text>
+          <rect x="322" y="86" width="100" height="44" rx="8" fill="#0a0d19" stroke="#a6ff00"/>
+          <text x="372" y="106" font-size="11" fill="#a6ff00" text-anchor="middle" class="svg-label">DENSE</text>
+          <text x="372" y="121" font-size="9" fill="#93a4b8" text-anchor="middle">embeddings</text>
+          <text x="20" y="210" class="svg-label" font-size="11" fill="#93a4b8" letter-spacing="2">CHUNKING STRATEGIES</text>
+          ${['fixed-size + overlap','sentence / recursive','semantic (meaning-aware)'].map((t,i)=>`<text x="20" y="${232+i*22}" font-size="12" fill="#cdd6e4">• ${t}</text>`).join('')}
+        </svg>
+        <figcaption>Split documents into retrievable units, then build the index(es) you'll search against.</figcaption>
+      </figure>
+      <ul class="note-list">
+        <li><span class="k vi">Chunking</span><span class="v"><b>Fixed-size + overlap</b> is simple; <b>sentence / recursive</b> respects structure; <b>semantic</b> splits on meaning. Too big = noisy matches, too small = lost context.</span></li>
+        <li><span class="k">Lexical index</span><span class="v"><b>BM25 / keyword</b> — exact term matching. Fast, transparent, great for IDs and jargon like <code>fct_net_revenue_v2</code>.</span></li>
+        <li><span class="k lm">Dense index</span><span class="v"><b>Embeddings</b> in a vector store — matches meaning, catches paraphrase. Needs a model + ANN index.</span></li>
+        <li><span class="k am">Metadata</span><span class="v">Index <b>region, env, status, access</b> alongside text so you can filter the pool before ranking.</span></li>
+        <li><span class="k mg">Hybrid</span><span class="v">Run both lexical + dense and <b>fuse</b> the rankings — the usual production default.</span></li>
+      </ul>
+    </div>
+    <div class="callout">In this demo: each of the 16 documents is <b>one hand-authored semantic chunk</b> — no automatic chunker — so the spotlight stays on filtering, fusion, reranking and live state.</div>
+  </section>`;
+}
+
+function slideRetrievalRerank() {
+  return `<section class="slide">
+    <p class="eyebrow">Foundation <span class="seg">·</span> 03 of 03 <span class="seg">·</span> retrieval &amp; reranking</p>
+    <h2 class="headline">Retrieval is a <span class="hl">pipeline</span>, not a single lookup</h2>
+    <p class="subhead">Every stage after the raw search exists to push better evidence up and worse evidence down before the model ever sees it.</p>
+    <figure class="figwrap body" style="flex:1">
+      <svg viewBox="0 0 1160 300" role="img" aria-label="Query flows through expansion hybrid retrieval fusion reranking and policy to top-k">
+        <defs><marker id="aP" markerWidth="10" markerHeight="10" refX="7" refY="4.5" orient="auto"><polygon points="0,0 9,4.5 0,9" fill="#00e5ff"/></marker></defs>
+        <rect x="10" y="120" width="120" height="56" rx="10" fill="#0a0d19" stroke="#93a4b8"/>
+        <text x="70" y="146" font-size="13" fill="#f8fafc" text-anchor="middle" font-weight="600">Query</text>
+        <text x="70" y="164" font-size="10" fill="#93a4b8" text-anchor="middle">user question</text>
+        <rect x="170" y="120" width="130" height="56" rx="10" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
+        <text x="235" y="143" font-size="12" fill="#8a5cff" text-anchor="middle" class="svg-label">EXPAND</text>
+        <text x="235" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">rewrite + synonyms</text>
+        <rect x="340" y="56" width="130" height="52" rx="10" fill="rgba(0,229,255,.07)" stroke="#00e5ff"/>
+        <text x="405" y="80" font-size="12" fill="#00e5ff" text-anchor="middle" class="svg-label">BM25 LANE</text>
+        <text x="405" y="97" font-size="10" fill="#93a4b8" text-anchor="middle">lexical</text>
+        <rect x="340" y="188" width="130" height="52" rx="10" fill="rgba(166,255,0,.07)" stroke="#a6ff00"/>
+        <text x="405" y="212" font-size="12" fill="#a6ff00" text-anchor="middle" class="svg-label">DENSE LANE</text>
+        <text x="405" y="229" font-size="10" fill="#93a4b8" text-anchor="middle">embeddings</text>
+        <rect x="510" y="120" width="120" height="56" rx="10" fill="#0a0d19" stroke="#8a5cff"/>
+        <text x="570" y="143" font-size="12" fill="#8a5cff" text-anchor="middle" class="svg-label">RRF FUSE</text>
+        <text x="570" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">merge rankings</text>
+        <rect x="670" y="120" width="130" height="56" rx="10" fill="rgba(255,209,102,.08)" stroke="#ffd166"/>
+        <text x="735" y="143" font-size="12" fill="#ffd166" text-anchor="middle" class="svg-label">RERANK</text>
+        <text x="735" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">cross-encoder</text>
+        <rect x="840" y="120" width="130" height="56" rx="10" fill="rgba(255,43,214,.08)" stroke="#ff2bd6"/>
+        <text x="905" y="143" font-size="12" fill="#ff2bd6" text-anchor="middle" class="svg-label">POLICY</text>
+        <text x="905" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">authority + metadata</text>
+        <rect x="1010" y="120" width="130" height="56" rx="10" fill="#0a0d19" stroke="#00e5ff"/>
+        <text x="1075" y="143" font-size="13" fill="#00e5ff" text-anchor="middle" font-weight="700">TOP-k</text>
+        <text x="1075" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">evidence → LLM</text>
+        <path d="M130 148 L166 148" stroke="#00e5ff" stroke-width="2" marker-end="url(#aP)"/>
+        <path d="M300 140 C 320 110, 326 95, 338 86" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aP)"/>
+        <path d="M300 156 C 320 190, 326 205, 338 212" stroke="#a6ff00" stroke-width="2" fill="none" marker-end="url(#aP)"/>
+        <path d="M470 86 C 492 110, 498 120, 508 134" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aP)"/>
+        <path d="M470 212 C 492 190, 498 180, 508 162" stroke="#a6ff00" stroke-width="2" fill="none" marker-end="url(#aP)"/>
+        <path d="M630 148 L666 148" stroke="#8a5cff" stroke-width="2" marker-end="url(#aP)"/>
+        <path d="M800 148 L836 148" stroke="#ffd166" stroke-width="2" marker-end="url(#aP)"/>
+        <path d="M970 148 L1006 148" stroke="#ff2bd6" stroke-width="2" marker-end="url(#aP)"/>
+      </svg>
+      <figcaption>Query expansion → hybrid lexical + dense retrieval → reciprocal-rank fusion → cross-encoder rerank → authority / metadata policy → top-k. The demo's buttons switch these stages on one at a time.</figcaption>
+    </figure>
+  </section>`;
+}
+
+function slideUseCase() {
+  const docs = [
+    ['02_contract','EU net revenue contract','CONTRACT','key'],
+    ['04_metric','Net revenue definition','CONTRACT','key'],
+    ['03_migration','Revenue migration','MIGRATION','act'],
+    ['09_freshness','Freshness policy','POLICY','pol'],
+    ['10_fx','Currency conversion','POLICY','pol'],
+    ['08_incident','DE refunds incident','INCIDENT','act'],
+    ['01_legacy','Legacy daily guide','DEPRECATED','dep'],
+    ['07_slack_old','Slack shortcut','DEPRECATED','dep'],
+    ['05_us','US revenue contract','US · OUT OF SCOPE','act'],
+    ['06_staging','Staging guide','STAGING','act'],
+    ['11_lineage','Revenue lineage','CATALOG','act'],
+    ['15_slack_new','Slack: EU blocked','SLACK','act'],
+  ];
+  return `<section class="slide">
+    <p class="eyebrow">The use case <span class="seg">·</span> one question, two kinds of truth</p>
+    <h2 class="headline">A finance analyst asks one <span class="hl">deceptively simple</span> question</h2>
+    <div class="cols c-55 body">
+      <div style="display:flex;flex-direction:column;gap:16px;min-height:0">
+        <div class="title-q" style="margin:0;max-width:none;font-size:15px">
+          <span class="qmark">?</span><span>"Which table should I use for EU net revenue, and can I trust yesterday's data?"</span>
+        </div>
+        <figure class="figwrap" style="flex:none">
+          <svg viewBox="0 0 520 150" role="img" aria-label="The question splits into a historical meaning path and a live state path">
+            <defs><marker id="aU" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#00e5ff"/></marker>
+            <marker id="aU2" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#a6ff00"/></marker></defs>
+            <rect x="200" y="58" width="110" height="34" rx="8" fill="#0a0d19" stroke="#93a4b8"/>
+            <text x="255" y="79" font-size="12" fill="#f8fafc" text-anchor="middle" font-weight="600">the question</text>
+            <path d="M310 66 C 360 50, 380 36, 404 32" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aU)"/>
+            <path d="M310 84 C 360 100, 380 114, 404 118" stroke="#a6ff00" stroke-width="2" fill="none" marker-end="url(#aU2)"/>
+            <rect x="408" y="14" width="108" height="40" rx="8" fill="rgba(0,229,255,.07)" stroke="#00e5ff"/>
+            <text x="462" y="32" font-size="11" fill="#00e5ff" text-anchor="middle" class="svg-label">WHICH TABLE?</text>
+            <text x="462" y="47" font-size="10" fill="#93a4b8" text-anchor="middle">historical meaning</text>
+            <rect x="408" y="98" width="108" height="40" rx="8" fill="rgba(166,255,0,.07)" stroke="#a6ff00"/>
+            <text x="462" y="116" font-size="11" fill="#a6ff00" text-anchor="middle" class="svg-label">TRUST IT?</text>
+            <text x="462" y="131" font-size="10" fill="#93a4b8" text-anchor="middle">live state now</text>
+            <text x="60" y="40" font-size="12" fill="#00e5ff">lives in</text><text x="60" y="56" font-size="12" fill="#00e5ff">documents</text>
+            <text x="70" y="104" font-size="12" fill="#a6ff00">lives in the</text><text x="70" y="120" font-size="12" fill="#a6ff00">warehouse</text>
+          </svg>
+          <figcaption>Two risks hide in one sentence: pick the right table, and prove today's data is usable.</figcaption>
+        </figure>
+        <ul class="note-list" style="gap:9px">
+          <li><span class="k mg">The trap</span><span class="v">A deprecated guide confidently says <code>daily_revenue</code>. The live contract says <code>fct_net_revenue_v2</code>. Both are retrievable.</span></li>
+          <li><span class="k lm">The purpose</span><span class="v">Watch an answer go from <b>confidently wrong</b> to <b>honestly grounded</b> as layers switch on.</span></li>
+        </ul>
+      </div>
+      <div style="display:flex;flex-direction:column;min-height:0">
+        <p class="tag" style="margin-bottom:10px">The corpus · 16 synthetic docs · conflicts, versions &amp; conditions</p>
+        <div class="corpus">
+          ${docs.map(([id,t,s,c])=>`<div class="doc ${c}"><div class="did">${id}</div><div class="dt">${t}</div><div class="ds ${c==='act'?'act':''}">${s}</div></div>`).join('')}
+        </div>
+        <div class="legend">
+          <span><i class="key"></i> canonical contract</span>
+          <span><i class="pol"></i> policy / rule</span>
+          <span><i class="dep"></i> deprecated — the trap</span>
+        </div>
+        <p style="font-size:13px;color:var(--dim);margin-top:12px;font-family:var(--mono)">+ 4 more: 12_gross · 13_orders · 14_owner · 16_snapshot</p>
+      </div>
+    </div>
+  </section>`;
+}
+
+function slideButton(b, idx) {
+  const steps = BUTTONS.map((s)=>{
+    const cls = s.n < b.n ? "done" : s.n === b.n ? "active" : "";
+    return `<div class="step ${cls}" style="--accent:${s.accent}"><div class="n">0${s.n}</div><span class="nm">${s.name}</span></div>`;
+  }).join("");
+  const confPrev = b.n > 1 ? CONF[b.n-2] : null;
+  return `<section class="slide" style="--accent:${b.accent}">
+    <p class="eyebrow" style="color:${b.accent}">Button 0${b.n} of 08 <span class="seg">·</span> ${b.name}</p>
+    <h2 class="headline">${b.name} <span style="color:${b.accent}">—</span> ${b.verdict}</h2>
+    <p class="subhead">${b.sub}</p>
+    <div class="body" style="margin-top:18px">
+      <div class="stepper">${steps}</div>
+      <div class="bslide-body">
+        <div class="whatsnew">
+          <div class="added-card">
+            <p class="tag">${b.addedTag}</p>
+            <p class="added-text">${b.added}</p>
+          </div>
+          <div class="mech">${b.mech}</div>
+        </div>
+        <div class="panel answer-card">
+          <div class="ac-head">
+            <span class="who">▍ Chatbot response</span>
+            <span class="verdict ${b.vclass}">${b.verdict}</span>
+          </div>
+          <p class="ac-answer">${b.answer}</p>
+          <div class="metrics">
+            <div class="metric">
+              <p class="tag">Retrieval confidence</p>
+              <div class="conf-row">
+                <span class="conf-track"><i style="width:${CONF[b.n-1]}%"></i></span>
+                <span class="conf-num" style="color:${b.accent}">${CONF[b.n-1]}</span>
+              </div>
+              <p class="delta">${b.delta}</p>
+            </div>
+            <div class="metric">
+              <p class="tag">Contract rank</p>
+              <p class="rank-val" style="color:${b.vclass==='bad'?'var(--red)':'var(--cyan)'}">${RANK[b.n-1]} <small>of 5</small></p>
+              <p class="delta">${b.n>=3?'<span class="up">canonical surfaced</span>':'<span class="flat">buried under stale docs</span>'}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function slideTakeaway() {
+  const w = 1040, h = 300, pad = 40;
+  const n = CONF.length;
+  const xs = CONF.map((_,i)=> pad + i*(w-2*pad)/(n-1));
+  const ys = CONF.map(c => h-30 - (c/100)*(h-70));
+  const line = xs.map((x,i)=>`${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
+  const area = `${pad},${h-30} ${line} ${xs[n-1].toFixed(1)},${h-30}`;
+  const labels = BUTTONS.map(b=>b.name);
+  return `<section class="slide">
+    <p class="eyebrow">Takeaway <span class="seg">·</span> make the uncertainty visible</p>
+    <h2 class="headline">Every layer is one move from <span class="hl red">confident guess</span> to <span class="hl lime">grounded answer</span></h2>
+    <figure class="figwrap body" style="flex:none;margin-top:18px">
+      <svg viewBox="0 0 1040 300" role="img" aria-label="Retrieval confidence climbs from 32 to 99 across the eight pipeline stages">
+        <defs>
+          <linearGradient id="confFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#a6ff00" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#00e5ff" stop-opacity="0.02"/>
+          </linearGradient>
+          <linearGradient id="confLine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#ff3b5f"/><stop offset="45%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#a6ff00"/>
+          </linearGradient>
+        </defs>
+        ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#1a2230"/><text x="${pad-8}" y="${y+4}" font-size="10" fill="#546070" text-anchor="end">${g}</text>`;}).join('')}
+        <polygon points="${area}" fill="url(#confFill)"/>
+        <polyline points="${line}" fill="none" stroke="url(#confLine)" stroke-width="3"/>
+        ${CONF.map((c,i)=>`
+          <circle cx="${xs[i].toFixed(1)}" cy="${ys[i].toFixed(1)}" r="${i===0||i===n-1?6:4.5}" fill="${BUTTONS[i].accent}" stroke="#02030a" stroke-width="2"/>
+          <text x="${xs[i].toFixed(1)}" y="${(ys[i]-14).toFixed(1)}" font-size="13" fill="${BUTTONS[i].accent}" text-anchor="middle" class="svg-label" font-weight="700">${c}</text>
+          <text x="${xs[i].toFixed(1)}" y="${h-12}" font-size="10" fill="#93a4b8" text-anchor="middle">0${i+1}</text>
+          <text x="${xs[i].toFixed(1)}" y="${h-1}" font-size="9" fill="#546070" text-anchor="middle">${labels[i].split(' ')[0]}</text>
+        `).join('')}
+        <line x1="${xs[2].toFixed(1)}" y1="20" x2="${xs[2].toFixed(1)}" y2="${h-30}" stroke="#00e5ff" stroke-dasharray="3 5" opacity="0.5"/>
+        <text x="${(+xs[2]+6).toFixed(1)}" y="34" font-size="10" fill="#00e5ff">stale docs filtered out</text>
+        <line x1="${xs[6].toFixed(1)}" y1="20" x2="${xs[6].toFixed(1)}" y2="${h-30}" stroke="#a6ff00" stroke-dasharray="3 5" opacity="0.5"/>
+        <text x="${(+xs[6]-6).toFixed(1)}" y="34" font-size="10" fill="#a6ff00" text-anchor="end">live check gates the answer</text>
+      </svg>
+      <figcaption>Retrieval confidence (0–99), captured from the live demo at each of the eight stages.</figcaption>
+    </figure>
+    <div class="pillars">
+      <div class="pillar"><p class="pn" style="color:var(--cyan)">Scope &amp; filter</p><p class="pd">Metadata filtering drops deprecated sources before ranking — the single biggest jump.</p></div>
+      <div class="pillar"><p class="pn" style="color:var(--magenta)">Authority</p><p class="pd">When sources conflict, let contracts and policies outrank Slack and snapshots.</p></div>
+      <div class="pillar"><p class="pn" style="color:var(--lime)">Live evidence</p><p class="pd">Docs explain meaning; a query-time check decides whether today's data is usable.</p></div>
+      <div class="pillar"><p class="pn" style="color:var(--amber)">Measure it</p><p class="pd">A pretty demo isn't an evaluation. Confidence here is illustrative — real trust needs a labelled test set.</p></div>
+    </div>
+  </section>`;
+}
+
+/* ======================================================================
+   ASSEMBLE + NAVIGATION
+   ====================================================================== */
+const slides = [
+  slideTitle(),
+  slideWhatIsRag(),
+  slideChunkIndex(),
+  slideRetrievalRerank(),
+  slideUseCase(),
+  ...BUTTONS.map((b,i)=>slideButton(b,i)),
+  slideTakeaway(),
+];
+const deck = document.getElementById("deck");
+deck.innerHTML = slides.join("");
+const slideEls = [...deck.querySelectorAll(".slide")];
+const total = slideEls.length;
+
+let cur = 0;
+const counter = document.getElementById("counter");
+const progressBar = document.querySelector("#progress i");
+
+function show(i) {
+  cur = Math.max(0, Math.min(total - 1, i));
+  slideEls.forEach((s, idx) => s.classList.toggle("active", idx === cur));
+  counter.innerHTML = `<b>${String(cur + 1).padStart(2, "0")}</b> / ${total}`;
+  progressBar.style.width = `${((cur + 1) / total) * 100}%`;
+  location.hash = String(cur + 1);
+}
+function next() { show(cur + 1); }
+function prev() { show(cur - 1); }
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); next(); }
+  else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); prev(); }
+  else if (e.key === "Home") { show(0); }
+  else if (e.key === "End") { show(total - 1); }
+  else if (e.key.toLowerCase() === "f") {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+});
+
+// click to advance (ignore clicks on the HUD / left third = back)
+document.getElementById("viewport").addEventListener("click", (e) => {
+  const x = e.clientX / window.innerWidth;
+  if (x < 0.25) prev(); else next();
+});
+
+// scale the fixed 1280x720 deck to fit the viewport
+function fit() {
+  const s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  deck.style.transform = `scale(${s})`;
+}
+window.addEventListener("resize", fit);
+fit();
+
+const start = parseInt(location.hash.replace("#", ""), 10);
+show(Number.isFinite(start) && start >= 1 ? start - 1 : 0);
+</script>
+</body>
+</html>

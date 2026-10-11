@@ -1,0 +1,178 @@
+[
+  {
+    "id": "01_legacy",
+    "title": "Legacy daily revenue guide",
+    "region": "EU",
+    "status": "deprecated",
+    "kind": "guide",
+    "updated_at": "2024-03-01",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/01_legacy.md"
+  },
+  {
+    "id": "02_contract",
+    "title": "EU net revenue data contract",
+    "region": "EU",
+    "status": "active",
+    "kind": "contract",
+    "updated_at": "2026-09-01",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/02_contract.md"
+  },
+  {
+    "id": "03_migration",
+    "title": "Revenue migration",
+    "region": "EU",
+    "status": "active",
+    "kind": "migration",
+    "updated_at": "2026-09-02",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/03_migration.md"
+  },
+  {
+    "id": "04_metric",
+    "title": "Net revenue metric definition",
+    "region": "EU",
+    "status": "active",
+    "kind": "contract",
+    "updated_at": "2026-09-01",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/04_metric.md"
+  },
+  {
+    "id": "05_us",
+    "title": "US net revenue contract",
+    "region": "US",
+    "status": "active",
+    "kind": "contract",
+    "updated_at": "2026-09-03",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/05_us.md"
+  },
+  {
+    "id": "06_staging",
+    "title": "Staging revenue guide",
+    "region": "EU",
+    "status": "active",
+    "kind": "guide",
+    "updated_at": "2026-09-03",
+    "environment": "staging",
+    "access": "internal",
+    "path": "documents/06_staging.md"
+  },
+  {
+    "id": "07_slack_old",
+    "title": "Slack revenue shortcut",
+    "region": "EU",
+    "status": "deprecated",
+    "kind": "slack",
+    "updated_at": "2024-06-01",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/07_slack_old.md"
+  },
+  {
+    "id": "08_incident",
+    "title": "DE refunds ingestion incident",
+    "region": "EU",
+    "status": "active",
+    "kind": "incident",
+    "updated_at": "2026-10-09",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/08_incident.md"
+  },
+  {
+    "id": "09_freshness",
+    "title": "Freshness policy",
+    "region": "EU",
+    "status": "active",
+    "kind": "policy",
+    "updated_at": "2026-09-05",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/09_freshness.md"
+  },
+  {
+    "id": "10_fx",
+    "title": "Currency conversion policy",
+    "region": "EU",
+    "status": "active",
+    "kind": "policy",
+    "updated_at": "2026-09-05",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/10_fx.md"
+  },
+  {
+    "id": "11_lineage",
+    "title": "Revenue lineage",
+    "region": "EU",
+    "status": "active",
+    "kind": "catalog",
+    "updated_at": "2026-09-04",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/11_lineage.md"
+  },
+  {
+    "id": "12_gross",
+    "title": "Gross sales model",
+    "region": "EU",
+    "status": "active",
+    "kind": "catalog",
+    "updated_at": "2026-09-04",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/12_gross.md"
+  },
+  {
+    "id": "13_orders",
+    "title": "Orders catalog",
+    "region": "EU",
+    "status": "active",
+    "kind": "catalog",
+    "updated_at": "2026-09-04",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/13_orders.md"
+  },
+  {
+    "id": "14_owner",
+    "title": "Ownership directory",
+    "region": "EU",
+    "status": "active",
+    "kind": "catalog",
+    "updated_at": "2026-09-04",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/14_owner.md"
+  },
+  {
+    "id": "15_slack_new",
+    "title": "Slack incomplete EU dashboard",
+    "region": "EU",
+    "status": "active",
+    "kind": "slack",
+    "updated_at": "2026-10-09",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/15_slack_new.md"
+  },
+  {
+    "id": "16_snapshot",
+    "title": "Cached health snapshot",
+    "region": "EU",
+    "status": "active",
+    "kind": "snapshot",
+    "updated_at": "2026-10-08",
+    "environment": "prod",
+    "access": "internal",
+    "path": "documents/16_snapshot.md"
+  }
+]

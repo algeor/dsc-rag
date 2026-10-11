@@ -1,0 +1,74 @@
+{
+  "question": "Which table should I use for EU net revenue, and can I trust yesterday's data?",
+  "mode": "naive",
+  "backend": "offline",
+  "generation": "OFFLINE deterministic evidence template — not an LLM",
+  "disabled": [],
+  "trace": [
+    "naive retrieval: raw BM25 over all documents, including stale sources"
+  ],
+  "evidence": [
+    {
+      "id": "01_legacy",
+      "title": "Legacy daily revenue guide",
+      "region": "EU",
+      "status": "deprecated",
+      "kind": "guide",
+      "updated_at": "2024-03-01",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/01_legacy.md",
+      "text": "# Legacy daily revenue guide\n\nUse finance.daily_revenue for daily net revenue in the EU. Yesterday revenue is available after the daily revenue job. This guide predates the v2 migration.\n"
+    },
+    {
+      "id": "07_slack_old",
+      "title": "Slack revenue shortcut",
+      "region": "EU",
+      "status": "deprecated",
+      "kind": "slack",
+      "updated_at": "2024-06-01",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/07_slack_old.md",
+      "text": "# Slack revenue shortcut\n\nFor quick daily revenue answers use finance.daily_revenue. It worked for our old dashboard. This historical message is not an approved data contract.\n"
+    },
+    {
+      "id": "04_metric",
+      "title": "Net revenue metric definition",
+      "region": "EU",
+      "status": "active",
+      "kind": "contract",
+      "updated_at": "2026-09-01",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/04_metric.md",
+      "text": "# Net revenue metric definition\n\nNet revenue = gross sales minus VAT minus refunds. finance.fct_net_revenue_v2 stores local currency values. Use approved daily FX rates for a combined EU total. Never sum EUR and PLN without conversion.\n"
+    },
+    {
+      "id": "02_contract",
+      "title": "EU net revenue data contract",
+      "region": "EU",
+      "status": "active",
+      "kind": "contract",
+      "updated_at": "2026-09-01",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/02_contract.md",
+      "text": "# EU net revenue data contract\n\nCanonical asset: finance.fct_net_revenue_v2. Daily net revenue excludes VAT and subtracts refunds. Grain: business_date × country × currency. Amounts are in local currency. Convert to a common currency before aggregating across currencies. Coverage: EU. Owner: Finance Data. Completeness must be checked separately.\n"
+    },
+    {
+      "id": "08_incident",
+      "title": "DE refunds ingestion incident",
+      "region": "EU",
+      "status": "active",
+      "kind": "incident",
+      "updated_at": "2026-10-09",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/08_incident.md",
+      "text": "# DE refunds ingestion incident\n\nGermany refunds ingestion was delayed. Net revenue can be overstated when refunds are missing. Replay ingestion and rerun validation. A past incident is not evidence of current pipeline health.\n"
+    }
+  ],
+  "live_status": null,
+  "answer": "Naive retrieval is risky: the top source points to finance.daily_revenue [01_legacy], but that source is deprecated. Verify against a current contract before using it. Current readiness is UNKNOWN: no live check was performed."
+}

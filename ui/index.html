@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RAG Truth Demo</title>
+    <link rel="stylesheet" href="/styles.css?v=layout-redo-1" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-label="Demo controls">
+        <div class="brand-block">
+          <p class="eyebrow">DATA STACK CONFERENCE DEMO</p>
+          <h1 id="brandTitle">From Data to Answers: Where Does Truth Get Lost in RAG?</h1>
+        </div>
+
+        <div class="question-box">
+          <label for="question">Question</label>
+          <textarea id="question" rows="2">Which table should I use for EU net revenue, and can I trust yesterday's data?</textarea>
+          <div class="field-row">
+            <label for="date">Business date</label>
+            <input id="date" value="2026-10-09" />
+          </div>
+        </div>
+      </section>
+
+      <div class="demo-layout">
+        <section class="stage-grid" aria-label="Demo steps">
+          <button class="step active" data-step="naive">
+            <span>1</span>
+            <strong>Naive search</strong>
+            <small>raw BM25; stale source wins</small>
+          </button>
+          <button class="step" data-step="indexing">
+            <span>2</span>
+            <strong>Indexing</strong>
+            <small>title + metadata + text</small>
+          </button>
+          <button class="step" data-step="metadata">
+            <span>3</span>
+            <strong>Metadata filter</strong>
+            <small>EU / prod / active / internal</small>
+          </button>
+          <button class="step" data-step="rewrite">
+            <span>4</span>
+            <strong>Query expansion</strong>
+            <small>contract, VAT, refunds, FX</small>
+          </button>
+          <button class="step" data-step="rerank">
+            <span>5</span>
+            <strong>Reranking</strong>
+            <small>better evidence moves up</small>
+          </button>
+          <button class="step" data-step="authority">
+            <span>6</span>
+            <strong>Authority policy</strong>
+            <small>contracts beat Slack</small>
+          </button>
+          <button class="step danger" data-step="live">
+            <span>7</span>
+            <strong>Add live check</strong>
+            <small>same RAG, current readiness</small>
+          </button>
+          <button class="step success" data-step="complete">
+            <span>8</span>
+            <strong>Mark complete</strong>
+            <small>same pipeline, state flips</small>
+          </button>
+        </section>
+
+        <div class="demo-main">
+          <section class="toolbar" aria-label="Controls">
+            <div id="status" class="status">Ready</div>
+          </section>
+
+          <section class="result-layout">
+            <article class="chat-panel">
+              <div class="panel-heading">
+                <p class="eyebrow">CHATBOT VIEW</p>
+                <div id="modeBadge" class="badge">naive</div>
+              </div>
+              <div id="chat" class="chat-log" aria-live="polite">
+                <div class="empty-chat">Click a stage button to add the question and response.</div>
+              </div>
+              <div class="chat-footer">
+                <button id="clearChatBtn" class="icon-button" aria-label="Clear chat" title="Clear chat">
+                  <span class="bin-icon" aria-hidden="true"></span>
+                </button>
+              </div>
+            </article>
+
+            <aside class="side-stack">
+              <section class="live-panel">
+                <p class="eyebrow">LIVE STATUS</p>
+                <div id="readiness" class="readiness unknown">UNKNOWN</div>
+                <div id="partitions" class="partition-list"></div>
+                <p id="liveNote" class="muted">No live check has run yet.</p>
+              </section>
+
+              <section class="panel trace-panel">
+                <p class="eyebrow">TRACE</p>
+                <ol id="trace" class="trace-list"></ol>
+              </section>
+            </aside>
+          </section>
+
+        </div>
+
+      </div>
+
+      <section class="lower-grid">
+        <article class="panel evidence-panel">
+          <p class="eyebrow">EVIDENCE</p>
+          <div id="evidence" class="evidence-list"></div>
+        </article>
+
+        <article class="panel json-panel">
+          <div class="panel-heading">
+            <p class="eyebrow">RAW JSON</p>
+            <button id="copyBtn" class="secondary small">Copy</button>
+          </div>
+          <pre id="rawJson">{}</pre>
+        </article>
+      </section>
+    </main>
+
+    <script src="/app.js?v=layout-redo-1"></script>
+  </body>
+</html>

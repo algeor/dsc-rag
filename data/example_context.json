@@ -1,0 +1,79 @@
+{
+  "question": "Which table should I use for EU net revenue, and can I trust yesterday's data?",
+  "mode": "context",
+  "backend": "offline",
+  "generation": "OFFLINE deterministic evidence template — not an LLM",
+  "disabled": [],
+  "trace": [
+    "index: title + metadata + document text indexed as searchable chunks",
+    "metadata index: EU / prod / active / internal (explicit demo user scope)",
+    "rewrite: fixed domain query expansion, not LLM rewriting",
+    "offline retrieval: BM25 over the local index; neural embeddings are optional",
+    "rerank: deterministic evidence-quality reranker for the offline demo",
+    "authority policy applied separately from relevance ranking"
+  ],
+  "evidence": [
+    {
+      "id": "02_contract",
+      "title": "EU net revenue data contract",
+      "region": "EU",
+      "status": "active",
+      "kind": "contract",
+      "updated_at": "2026-09-01",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/02_contract.md",
+      "text": "# EU net revenue data contract\n\nCanonical asset: finance.fct_net_revenue_v2. Daily net revenue excludes VAT and subtracts refunds. Grain: business_date × country × currency. Amounts are in local currency. Convert to a common currency before aggregating across currencies. Coverage: EU. Owner: Finance Data. Completeness must be checked separately.\n"
+    },
+    {
+      "id": "04_metric",
+      "title": "Net revenue metric definition",
+      "region": "EU",
+      "status": "active",
+      "kind": "contract",
+      "updated_at": "2026-09-01",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/04_metric.md",
+      "text": "# Net revenue metric definition\n\nNet revenue = gross sales minus VAT minus refunds. finance.fct_net_revenue_v2 stores local currency values. Use approved daily FX rates for a combined EU total. Never sum EUR and PLN without conversion.\n"
+    },
+    {
+      "id": "03_migration",
+      "title": "Revenue migration",
+      "region": "EU",
+      "status": "active",
+      "kind": "migration",
+      "updated_at": "2026-09-02",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/03_migration.md",
+      "text": "# Revenue migration\n\nfinance.daily_revenue is deprecated. EU consumers must migrate to finance.fct_net_revenue_v2. Legacy totals include VAT and omit late refunds. The two assets are not interchangeable.\n"
+    },
+    {
+      "id": "10_fx",
+      "title": "Currency conversion policy",
+      "region": "EU",
+      "status": "active",
+      "kind": "policy",
+      "updated_at": "2026-09-05",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/10_fx.md",
+      "text": "# Currency conversion policy\n\nEU totals must use approved FX rates for the relevant business_date. Missing FX rates block aggregation. Currency conversion is required even when all country partitions are complete.\n"
+    },
+    {
+      "id": "09_freshness",
+      "title": "Freshness policy",
+      "region": "EU",
+      "status": "active",
+      "kind": "policy",
+      "updated_at": "2026-09-05",
+      "environment": "prod",
+      "access": "internal",
+      "path": "documents/09_freshness.md",
+      "text": "# Freshness policy\n\nA successful job is not sufficient for readiness. Verify expected country partitions, row validation and complete status for the requested business_date. Check the operational store at query time.\n"
+    }
+  ],
+  "live_status": null,
+  "answer": "Use finance.fct_net_revenue_v2 [02_contract]. Values are local currency: convert before cross-currency aggregation [02_contract/04_metric]. Current readiness is UNKNOWN: no live check was performed."
+}
