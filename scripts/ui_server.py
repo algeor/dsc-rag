@@ -2,8 +2,10 @@
 """Small local UI server for the RAG truth demo."""
 from __future__ import annotations
 
+import argparse
 import json
 import mimetypes
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -20,6 +22,11 @@ from eval_confidence import run_eval  # noqa: E402
 # so its metrics never change. Compute once, cache, and serve the cached copy —
 # this keeps the toggle instant AND means it never mutates the live demo DB.
 _EVAL_CACHE: dict | None = None
+
+# Server-level gate for the LLM path. The UI toggle can only turn on LLM
+# generation when the server was started with --llm (a real OPENAI_API_KEY is
+# still required by demo.llm). This keeps the cost/network path opt-in.
+LLM_ENABLED: bool = False
 
 
 def _snapshot_partitions() -> list[tuple]:
@@ -85,7 +92,16 @@ class DemoHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802
         if self.path == "/api/defaults":
-            json_response(self, 200, {"question": QUESTION, "date": "2026-10-09"})
+            json_response(
+                self,
+                200,
+                {
+                    "question": QUESTION,
+                    "date": "2026-10-09",
+                    # The UI shows the LLM toggle only when the server allows it.
+                    "llm_enabled": LLM_ENABLED,
+                },
+            )
             return
 
         if self.path == "/api/eval":
@@ -125,6 +141,8 @@ class DemoHandler(BaseHTTPRequestHandler):
             question = payload.get("question") or QUESTION
             set_de = payload.get("set_de")
             reset = bool(payload.get("reset", False))
+            # Gate: the toggle may ask for LLM, but the server flag decides.
+            use_llm = LLM_ENABLED and bool(payload.get("use_llm", False))
 
             setup(reset)
             if set_de:
@@ -142,7 +160,7 @@ class DemoHandler(BaseHTTPRequestHandler):
                 backend=backend,
                 disabled=disabled,
                 date=date,
-                use_llm=False,
+                use_llm=use_llm,
             )
             json_response(self, 200, {"ok": True, "result": result})
         except Exception as exc:  # Keep the UI useful during live demos.
@@ -150,10 +168,24 @@ class DemoHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
+    global LLM_ENABLED
+    parser = argparse.ArgumentParser(description="Local UI server for the RAG truth demo.")
+    parser.add_argument("port", nargs="?", type=int, default=8765, help="Port to listen on (default 8765).")
+    parser.add_argument(
+        "--llm",
+        action="store_true",
+        help="Allow the UI toggle to generate answers via OpenAI (requires OPENAI_API_KEY). Omit for offline-only.",
+    )
+    args = parser.parse_args()
+
+    LLM_ENABLED = args.llm
+    if LLM_ENABLED and not os.environ.get("OPENAI_API_KEY"):
+        print("warning: --llm set but OPENAI_API_KEY is not in the environment; LLM calls will fail.")
+
     setup(True)
-    server = ThreadingHTTPServer(("127.0.0.1", port), DemoHandler)
-    print(f"RAG truth UI running at http://127.0.0.1:{port}")
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), DemoHandler)
+    mode = "LLM-enabled (toggle available)" if LLM_ENABLED else "offline-only"
+    print(f"RAG truth UI running at http://127.0.0.1:{args.port}  [{mode}]")
     server.serve_forever()
 
 

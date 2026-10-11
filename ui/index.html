@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>RAG Truth Demo</title>
-    <link rel="stylesheet" href="/styles.css?v=eval-toggle-1" />
+    <link rel="stylesheet" href="/styles.css?v=llm-toggle-1" />
   </head>
   <body>
     <main class="shell">
@@ -75,6 +75,11 @@
               <span class="eval-switch" aria-hidden="true"></span>
               <span class="eval-toggle-text">Eval</span>
             </label>
+            <label class="eval-toggle" id="llmToggleWrap" title="Generate answers with the LLM instead of the offline template" hidden>
+              <input type="checkbox" id="llmToggle" />
+              <span class="eval-switch" aria-hidden="true"></span>
+              <span class="eval-toggle-text">LLM</span>
+            </label>
             <div id="evalReadout" class="eval-readout" hidden></div>
             <div id="status" class="status">Ready</div>
           </section>
@@ -130,6 +135,6 @@
       </section>
     </main>
 
-    <script src="/app.js?v=eval-toggle-1"></script>
+    <script src="/app.js?v=llm-toggle-1"></script>
   </body>
 </html>
