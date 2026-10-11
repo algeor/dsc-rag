@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# IDE
+.idea/
+
+# Generated runtime database (seeded by scripts/demo.py)
+data/operations.sqlite
