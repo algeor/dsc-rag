@@ -591,6 +591,7 @@
    ====================================================================== */
 const CONF  = [32, 38, 60, 66, 67, 82, 94, 99];
 const RANK  = ["#4", "#3", "#2", "#1", "#1", "#1", "#1", "#1"];
+const CORR  = [0, 0, 60, 60, 60, 80, 100, 100];
 
 const BUTTONS = [
   {
@@ -1193,6 +1194,46 @@ function slideTakeaway() {
   </section>`;
 }
 
+function slideEvals() {
+  const w = 1040, h = 300, pad = 40, n = CORR.length;
+  const bw = (w - 2*pad) / n * 0.56;
+  const cx = CORR.map((_,i)=> pad + (i + 0.5)*(w-2*pad)/n);
+  const col = p => p === 0 ? "var(--red)" : p < 80 ? "var(--amber)" : p < 100 ? "var(--cyan)" : "var(--lime)";
+  const labels = BUTTONS.map(b=>b.name);
+  const rubric = [
+    ["Right table", "Recommends the canonical contract, never the deprecated table."],
+    ["No invented freshness", "Won't claim “yesterday is ready” without a live check."],
+    ["Flags currency", "Surfaces the local-currency / conversion caveat."],
+    ["Freshness governance", "Brings the freshness policy or a live check into play."],
+    ["Readiness resolved", "Actually resolves readiness from live partition state."],
+  ];
+  return `<section class="slide">
+    <p class="eyebrow">Measure it <span class="seg">·</span> did the answer actually get better?</p>
+    <h2 class="headline">Don't trust the climb &mdash; <span class="hl lime">grade every stage</span> against the final answer</h2>
+    <figure class="figwrap body" style="flex:none;margin-top:16px">
+      <svg viewBox="0 0 1040 300" role="img" aria-label="Answer correctness versus the final tuned answer climbs from 0 to 100 percent across the eight stages">
+        ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#1a2230"/><text x="${pad-8}" y="${y+4}" font-size="10" fill="#546070" text-anchor="end">${g}</text>`;}).join('')}
+        ${CORR.map((p,i)=>{
+          const bh = (p/100)*(h-70);
+          const y = h-30-bh;
+          const x = cx[i]-bw/2;
+          const bar = p === 0
+            ? `<line x1="${x.toFixed(1)}" y1="${(h-30).toFixed(1)}" x2="${(x+bw).toFixed(1)}" y2="${(h-30).toFixed(1)}" stroke="${col(p)}" stroke-width="3"/>`
+            : `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="4" fill="${col(p)}" fill-opacity="0.85"/>`;
+          return `${bar}
+          <text x="${cx[i].toFixed(1)}" y="${(y-10).toFixed(1)}" font-size="13" fill="${col(p)}" text-anchor="middle" class="svg-label" font-weight="700">${p}%</text>
+          <text x="${cx[i].toFixed(1)}" y="${h-12}" font-size="10" fill="#93a4b8" text-anchor="middle">0${i+1}</text>
+          <text x="${cx[i].toFixed(1)}" y="${h-1}" font-size="9" fill="#546070" text-anchor="middle">${labels[i].split(' ')[0]}</text>`;
+        }).join('')}
+      </svg>
+      <figcaption>Answer-correctness vs. the fully-tuned final answer, scored by <code>scripts/eval_confidence.py</code> &mdash; a reproducible rubric eval over the eight stages, not a calibrated probability (n&nbsp;=&nbsp;8).</figcaption>
+    </figure>
+    <div class="pillars" style="grid-template-columns:repeat(5,1fr)">
+      ${rubric.map(([t,d])=>`<div class="pillar"><p class="pn" style="color:var(--cyan)">${t}</p><p class="pd">${d}</p></div>`).join('')}
+    </div>
+  </section>`;
+}
+
 /* ======================================================================
    ASSEMBLE + NAVIGATION
    ====================================================================== */
@@ -1204,6 +1245,7 @@ const slides = [
   slideUseCase(),
   ...BUTTONS.map((b,i)=>slideButton(b,i)),
   slideTakeaway(),
+  slideEvals(),
 ];
 const deck = document.getElementById("deck");
 deck.innerHTML = slides.join("");
