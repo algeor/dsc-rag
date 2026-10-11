@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>RAG Truth Demo</title>
-    <link rel="stylesheet" href="/styles.css?v=layout-redo-1" />
+    <link rel="stylesheet" href="/styles.css?v=eval-toggle-1" />
   </head>
   <body>
     <main class="shell">
@@ -70,6 +70,12 @@
 
         <div class="demo-main">
           <section class="toolbar" aria-label="Controls">
+            <label class="eval-toggle" title="Show the seed eval's calibrated confidence">
+              <input type="checkbox" id="evalToggle" />
+              <span class="eval-switch" aria-hidden="true"></span>
+              <span class="eval-toggle-text">Eval</span>
+            </label>
+            <div id="evalReadout" class="eval-readout" hidden></div>
             <div id="status" class="status">Ready</div>
           </section>
 
@@ -124,6 +130,6 @@
       </section>
     </main>
 
-    <script src="/app.js?v=layout-redo-1"></script>
+    <script src="/app.js?v=eval-toggle-1"></script>
   </body>
 </html>
