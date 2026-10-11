@@ -10,3 +10,6 @@ data/operations.sqlite
 
 .env
 .venv/
+
+# Local dev scratch
+.dev/

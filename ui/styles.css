@@ -564,8 +564,9 @@ input:focus {
 .bubble.assistant {
   background: rgba(10, 13, 25, 0.96);
   border: 1px solid var(--lime);
-  min-width: min(880px, 94%);
-  max-width: min(880px, 94%);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .bubble.assistant.pending,
@@ -642,6 +643,7 @@ input:focus {
 
 .answer-hero {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
@@ -667,7 +669,7 @@ input:focus {
 }
 
 .answer-hero-body {
-  flex: 1 1 auto;
+  flex: 1 1 260px;
   min-width: 0;
 }
 
@@ -693,6 +695,7 @@ input:focus {
   line-height: 1.5;
   font-weight: 600;
   color: var(--white);
+  overflow-wrap: anywhere;
 }
 
 .answer-line {
@@ -821,7 +824,7 @@ input:focus {
 
 .answer-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 12px;
 }
 
@@ -1211,8 +1214,13 @@ pre {
 
   .answer-hero-aside {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     text-align: left;
+  }
+
+  .confidence {
+    width: auto;
   }
 
   .bubble,
