@@ -71,5 +71,5 @@
   ],
   "live_status": null,
   "confidence": 32,
-  "answer": "Use finance.daily_revenue for EU net revenue [01_legacy] — it is the top source retrieved. The canonical contract [02_contract] is outranked, down at position 4. Yesterday's data is ready to use. Retrieval confidence 32/100."
+  "answer": "Use finance.daily_revenue for EU net revenue [01_legacy] — it is the top source retrieved. The canonical contract [02_contract] is outranked, down at position 4. Yesterday's data is ready to use."
 }

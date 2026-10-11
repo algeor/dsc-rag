@@ -76,5 +76,5 @@
   ],
   "live_status": null,
   "confidence": 82,
-  "answer": "Use finance.fct_net_revenue_v2 [02_contract] — the canonical contract is now the top source. Values are local currency: convert before cross-currency EU totals [04_metric]. Freshness policy [09_freshness] says yesterday is trustworthy only after a live partition check — that check has not run yet. Retrieval confidence 82/100."
+  "answer": "Use finance.fct_net_revenue_v2 [02_contract] — the canonical contract is now the top source. Values are local currency: convert before cross-currency EU totals [04_metric]. Freshness policy [09_freshness] says yesterday is trustworthy only after a live partition check — that check has not run yet."
 }

@@ -176,9 +176,6 @@ def template(docs,status,q=QUESTION,conf=None):
     else:
         fresh="Nothing retrieved actually confirms yesterday's freshness."
     answer=rec+' '+fresh
-    # Groundedness metric, derived from the evidence — distinguishes stages whose
-    # top recommendation is the same but whose evidence quality differs (e.g. rerank).
-    if conf is not None: answer+=f" Retrieval confidence {conf}/100."
     return answer
 
 def llm(q,docs,status):
@@ -210,9 +207,6 @@ def run(q=QUESTION,mode='live',backend='offline',disabled=(),date='2026-10-09',u
     conf=confidence(docs,status,q)
     if use_llm:
         answer=llm(q,docs,status)
-        # Append the same deterministic grounding score the template uses, so the
-        # confidence number stays exact and the shape matches the pregenerated answers.
-        if conf is not None: answer+=f" Retrieval confidence {conf}/100."
     else:
         answer=template(docs,status,q,conf)
     return dict(question=q,mode=mode,backend=backend,generation='LLM' if use_llm else 'OFFLINE deterministic evidence template — not an LLM',disabled=list(disabled),trace=trace,evidence=docs,live_status=status,confidence=conf,answer=answer)
