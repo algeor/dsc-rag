@@ -514,6 +514,47 @@
 
   svg text { font-family: var(--mono); }
   .svg-label { font-family: var(--disp); font-weight: 600; }
+
+  /* live-demo overlay */
+  #demoOverlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; flex-direction: column;
+    background: var(--bg);
+    transform: translateY(100%);
+    transition: transform .42s cubic-bezier(.22, .61, .36, 1);
+    pointer-events: none;
+  }
+  #demoOverlay.open { transform: translateY(0); pointer-events: auto; }
+  #demoBar {
+    flex: 0 0 auto; display: flex; align-items: center; gap: 18px;
+    padding: 10px 20px; border-bottom: 1px solid var(--line);
+    background: var(--panel); font-family: var(--mono); font-size: 13px;
+  }
+  #demoBar .db-title {
+    font-family: var(--disp); font-weight: 700; letter-spacing: .09em;
+    color: var(--lime); display: flex; align-items: center; gap: 9px;
+  }
+  #demoBar .db-title::before {
+    content: ""; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--lime); box-shadow: 0 0 10px var(--lime);
+  }
+  #demoBar .db-hint { color: var(--muted); }
+  #demoBar .db-url { color: var(--cyan); font-size: 12px; opacity: .8; }
+  #demoBar #demoReload, #demoBar #demoClose {
+    background: transparent; border: 1px solid var(--line);
+    color: var(--muted); border-radius: 8px; padding: 5px 12px; cursor: pointer;
+    font-family: var(--mono); font-size: 13px; line-height: 1;
+  }
+  #demoBar #demoReload { margin-left: auto; }
+  #demoBar #demoReload:hover, #demoBar #demoClose:hover { color: var(--white); border-color: var(--muted); }
+  #demoFrame { flex: 1 1 auto; width: 100%; border: 0; background: var(--bg); }
+  #demoFallback {
+    position: absolute; inset: 44px 0 0 0; display: none;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 40px; color: var(--muted); font-family: var(--mono); font-size: 15px; line-height: 1.6;
+  }
+  #demoFallback code { color: var(--cyan); font-size: 14px; }
+  @media (prefers-reduced-motion: reduce) { #demoOverlay { transition: none; } }
 </style>
 
 <div id="viewport">
@@ -523,10 +564,26 @@
 <div id="hud">
   <span id="counter"><b>01</b> / 14</span>
   <div id="progress"><i></i></div>
-  <span id="hint"><kbd>←</kbd> <kbd>→</kbd> navigate &nbsp;·&nbsp; <kbd>F</kbd> fullscreen</span>
+  <span id="hint"><kbd>←</kbd> <kbd>→</kbd> navigate &nbsp;·&nbsp; <kbd>F</kbd> fullscreen &nbsp;·&nbsp; <kbd>D</kbd> live demo</span>
 </div>
 <div class="corner tl"></div><div class="corner tr"></div>
 <div class="corner bl"></div><div class="corner br"></div>
+
+<div id="demoOverlay" aria-hidden="true">
+  <div id="demoBar">
+    <span class="db-title">LIVE DEMO</span>
+    <span class="db-url" id="demoUrl"></span>
+    <span class="db-hint"><kbd>D</kbd> / <kbd>Esc</kbd> back to slides</span>
+    <button id="demoReload" aria-label="Reload demo">⟳ reload</button>
+    <button id="demoClose" aria-label="Close live demo">✕</button>
+  </div>
+  <iframe id="demoFrame" title="RAG truth live demo"></iframe>
+  <div id="demoFallback">
+    Demo server not reachable.<br />
+    Start it first: <code>python3 scripts/ui_server.py</code><br />
+    then press <kbd>D</kbd> again.
+  </div>
+</div>
 
 <script>
 /* ======================================================================
@@ -1167,19 +1224,79 @@ function show(i) {
 function next() { show(cur + 1); }
 function prev() { show(cur - 1); }
 
+/* ---- live demo overlay ------------------------------------------------
+   Embeds the running demo (scripts/ui_server.py, default port 8765) in an
+   iframe. Override the address with ?demo=http://host:port/ if you run the
+   server somewhere else. */
+const DEMO_URL = (() => {
+  const q = new URLSearchParams(location.search).get("demo");
+  if (q) return q;
+  // If the deck itself is served FROM the demo server, same-origin works;
+  // otherwise fall back to the demo server's default local address.
+  if (location.port === "8765") return "/";
+  return "http://127.0.0.1:8765/";
+})();
+const overlay = document.getElementById("demoOverlay");
+const demoFrame = document.getElementById("demoFrame");
+const fallback = document.getElementById("demoFallback");
+document.getElementById("demoUrl").textContent = DEMO_URL;
+let demoOpen = false, fallbackTimer = null;
+
+demoFrame.addEventListener("load", () => {
+  // a real page (not about:blank) came back → hide the "server down" hint
+  if (demoFrame.src && !demoFrame.src.startsWith("about:")) {
+    demoFrame.dataset.loaded = "1";
+    fallback.style.display = "none";
+    clearTimeout(fallbackTimer);
+  }
+});
+
+function loadDemo() {
+  // force a fresh load even if the URL is unchanged (about:blank → real url)
+  fallback.style.display = "none";
+  demoFrame.dataset.loaded = "";
+  demoFrame.src = "about:blank";
+  requestAnimationFrame(() => { demoFrame.src = DEMO_URL; });
+  clearTimeout(fallbackTimer);
+  fallbackTimer = setTimeout(() => {
+    if (!demoFrame.dataset.loaded) fallback.style.display = "flex";
+  }, 3000);
+}
+function openDemo() {
+  overlay.classList.add("open");
+  overlay.setAttribute("aria-hidden", "false");
+  demoOpen = true;
+  if (!demoFrame.dataset.loaded) loadDemo();   // first open, or after a failed attempt
+}
+function closeDemo() {
+  overlay.classList.remove("open");
+  overlay.setAttribute("aria-hidden", "true");
+  demoOpen = false;
+}
+function toggleDemo() { demoOpen ? closeDemo() : openDemo(); }
+document.getElementById("demoClose").addEventListener("click", closeDemo);
+document.getElementById("demoReload").addEventListener("click", loadDemo);
+
 document.addEventListener("keydown", (e) => {
+  const k = e.key.toLowerCase();
+  if (k === "d") { e.preventDefault(); toggleDemo(); return; }
+  if (e.key === "Escape") { if (demoOpen) { e.preventDefault(); closeDemo(); } return; }
+  if (k === "f") {
+    e.preventDefault();
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+    return;
+  }
+  if (demoOpen) return;   // slides stay put while the demo is up
   if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); next(); }
   else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); prev(); }
   else if (e.key === "Home") { show(0); }
   else if (e.key === "End") { show(total - 1); }
-  else if (e.key.toLowerCase() === "f") {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
-    else document.exitFullscreen?.();
-  }
 });
 
 // click to advance (ignore clicks on the HUD / left third = back)
 document.getElementById("viewport").addEventListener("click", (e) => {
+  if (demoOpen) return;
   const x = e.clientX / window.innerWidth;
   if (x < 0.25) prev(); else next();
 });
