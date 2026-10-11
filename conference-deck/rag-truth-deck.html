@@ -1298,6 +1298,15 @@ demoFrame.addEventListener("load", () => {
     fallback.style.display = "none";
     clearTimeout(fallbackTimer);
   }
+  // Same-origin demo (deck served FROM the demo server): once you click into
+  // the frame, focus lives inside it and the deck's own keydown never fires.
+  // Mirror the handler into the frame so D / Esc still return to the slides.
+  // Cross-origin demos throw on contentDocument access — that path relies on
+  // the focus-return below (mouse over the deck chrome) and the ✕ button.
+  try {
+    const doc = demoFrame.contentDocument;
+    if (doc) { doc.removeEventListener("keydown", handleKey); doc.addEventListener("keydown", handleKey); }
+  } catch { /* cross-origin: can't reach into the frame */ }
 });
 
 function loadDemo() {
@@ -1326,7 +1335,12 @@ function toggleDemo() { demoOpen ? closeDemo() : openDemo(); }
 document.getElementById("demoClose").addEventListener("click", closeDemo);
 document.getElementById("demoReload").addEventListener("click", loadDemo);
 
-document.addEventListener("keydown", (e) => {
+// Cross-origin fallback: while the demo iframe holds focus, the deck can't see
+// key presses. The top bar is part of the DECK (outside the frame), so moving
+// the pointer onto it hands focus back — then D / Esc reach the slides again.
+document.getElementById("demoBar").addEventListener("pointerenter", () => window.focus());
+
+function handleKey(e) {
   const k = e.key.toLowerCase();
   if (k === "d") { e.preventDefault(); toggleDemo(); return; }
   if (e.key === "Escape") { if (demoOpen) { e.preventDefault(); closeDemo(); } return; }
@@ -1341,7 +1355,8 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); prev(); }
   else if (e.key === "Home") { show(0); }
   else if (e.key === "End") { show(total - 1); }
-});
+}
+document.addEventListener("keydown", handleKey);
 
 // click to advance (ignore clicks on the HUD / left third = back)
 document.getElementById("viewport").addEventListener("click", (e) => {
