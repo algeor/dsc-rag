@@ -3,6 +3,7 @@ const state = {
   lastResult: null,
   evalOn: false,
   evalData: null,
+  llmOn: false,
 };
 
 const steps = {
@@ -27,6 +28,8 @@ const el = {
   status: document.querySelector("#status"),
   evalToggle: document.querySelector("#evalToggle"),
   evalReadout: document.querySelector("#evalReadout"),
+  llmToggle: document.querySelector("#llmToggle"),
+  llmToggleWrap: document.querySelector("#llmToggleWrap"),
   modeBadge: document.querySelector("#modeBadge"),
   chat: document.querySelector("#chat"),
   readiness: document.querySelector("#readiness"),
@@ -123,6 +126,7 @@ function requestForSelected(extra = {}) {
     question: el.question.value.trim(),
     date: el.date.value.trim() || "2026-10-09",
     backend: "offline",
+    use_llm: state.llmOn,
   };
 }
 
@@ -456,7 +460,8 @@ function describeMode(result) {
   const trace = result.trace || [];
   const retrieval = trace.some((line) => line.startsWith("index:")) ? " · indexed" : "";
   const rerank = trace.some((line) => line.startsWith("rerank:")) ? " + reranked" : "";
-  return `${result.mode}${retrieval}${rerank}${disabled}`;
+  const gen = String(result.generation || "").startsWith("LLM") ? " · LLM" : "";
+  return `${result.mode}${retrieval}${rerank}${disabled}${gen}`;
 }
 
 function describePayload(payload) {
@@ -561,6 +566,26 @@ el.copyBtn.addEventListener("click", async () => {
 el.evalToggle.addEventListener("change", (event) => {
   setEvalOn(event.target.checked);
 });
+
+el.llmToggle.addEventListener("change", (event) => {
+  state.llmOn = event.target.checked;
+  setStatus(state.llmOn ? "LLM generation on" : "Offline template", "var(--muted)");
+});
+
+// Reveal the LLM toggle only when the server was started with --llm. Otherwise
+// the server would force offline anyway, so hide it to avoid confusion.
+async function initCapabilities() {
+  try {
+    const response = await fetch("/api/defaults");
+    const data = await response.json();
+    if (data && data.llm_enabled) {
+      el.llmToggleWrap.hidden = false;
+    }
+  } catch {
+    // Offline-only server or fetch failure: leave the toggle hidden.
+  }
+}
+initCapabilities();
 
 async function resetDemoState() {
   const payload = {
