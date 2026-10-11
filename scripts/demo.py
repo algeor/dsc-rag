@@ -110,16 +110,30 @@ def confidence(docs,status,q=QUESTION):
     evidence + live status, so it is reproducible from the result JSON. It rises
     as retrieval drops stale sources, lifts the canonical contract, surfaces the
     currency + freshness policies, and as the live check resolves readiness."""
-    score=20
-    if any(d['status']=='deprecated' for d in docs): score-=15
+    return confidence_breakdown(docs,status,q)['score']
+
+def confidence_breakdown(docs,status,q=QUESTION):
+    """Explain the demo confidence score as auditable point contributions."""
     cr=canonical_rank(docs)
-    if cr is not None: score+=max(6,30-cr*6)                 # higher rank => more confidence
-    if any('local currency' in d['text'].lower() for d in docs): score+=10
-    if any(d['kind']=='policy' for d in docs): score+=15      # fx / freshness governance retrieved
-    q_scores=[max(0,offline_rerank_score(q,d)) for d in docs]  # reranking lifts higher-quality evidence into the top-k
-    score+=min(8,round(sum(q_scores)/6))
-    if status is not None: score+=20 if status['complete'] else 12
-    return max(5,min(99,score))
+    canonical_points=max(6,30-cr*6) if cr is not None else 0
+    q_scores=[max(0,offline_rerank_score(q,d)) for d in docs]
+    parts=[
+        ('base',20),
+        ('deprecated evidence penalty',-15 if any(d['status']=='deprecated' for d in docs) else 0),
+        ('canonical contract rank',canonical_points),
+        ('currency evidence',10 if any('local currency' in d['text'].lower() for d in docs) else 0),
+        ('policy evidence',15 if any(d['kind']=='policy' for d in docs) else 0),
+        ('evidence quality rerank signal',min(8,round(sum(q_scores)/6))),
+        ('live status',0 if status is None else (20 if status['complete'] else 12)),
+    ]
+    raw_score=sum(points for _,points in parts)
+    score=max(5,min(99,raw_score))
+    return {
+        'score':score,
+        'raw_score':raw_score,
+        'canonical_rank':None if cr is None else cr+1,
+        'parts':[{'name':name,'points':points} for name,points in parts],
+    }
 
 def template(docs,status,q=QUESTION,conf=None):
     """Answer is a pure function of the retrieved evidence + live status: no stage

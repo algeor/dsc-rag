@@ -76,7 +76,7 @@
   ],
   "live_status": {
     "business_date": "2026-10-09",
-    "checked_at": "2026-10-10T16:36:51.105275+00:00",
+    "checked_at": "2026-10-11T11:23:56.394504+00:00",
     "partitions": {
       "DE": "incomplete",
       "FR": "complete",
@@ -85,5 +85,6 @@
     "complete": false,
     "note": "Synthetic expected coverage: DE, FR, PL only; not all EU countries."
   },
-  "answer": "Use finance.fct_net_revenue_v2 [02_contract]. Values are local currency: convert before cross-currency aggregation [02_contract/04_metric]. Live check for 2026-10-09: NOT ready or unknown coverage: {\"DE\": \"incomplete\", \"FR\": \"complete\", \"PL\": \"complete\"} This is partition readiness, not proof that every data-quality or FX check passed."
+  "confidence": 94,
+  "answer": "Use finance.fct_net_revenue_v2 [02_contract] — the canonical contract is now the top source. Values are local currency: convert before cross-currency EU totals [04_metric]. Live check for 2026-10-09: NOT ready {\"DE\": \"incomplete\", \"FR\": \"complete\", \"PL\": \"complete\"}. Do not trust yesterday's data yet. This is partition readiness, not proof that every FX or quality check passed. Retrieval confidence 94/100."
 }
