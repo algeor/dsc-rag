@@ -34,6 +34,7 @@ setup(True)
 # matches, so the two can never silently diverge.
 import re
 from demo import canonical_rank, ROOT
+from eval_confidence import answer_correctness
 setup(True)
 stage_runs=[
     run(mode='naive'),
@@ -49,10 +50,13 @@ stage_runs.append(run(mode='live'))
 setup(True)
 conf_actual=[s['confidence'] for s in stage_runs]
 rank_actual=['#%d'%(canonical_rank(s['evidence'])+1) for s in stage_runs]
+corr_actual=[answer_correctness(s)['pct'] for s in stage_runs]
 deck=(ROOT/'conference-deck/rag-truth-deck.html').read_text()
 conf_deck=[int(x) for x in re.search(r'const CONF\s*=\s*\[([^\]]*)\]',deck).group(1).split(',')]
 rank_deck=re.findall(r'"(#\d)"',re.search(r'const RANK\s*=\s*\[([^\]]*)\]',deck).group(1))
+corr_deck=[int(x) for x in re.search(r'const CORR\s*=\s*\[([^\]]*)\]',deck).group(1).split(',')]
 assert conf_deck==conf_actual, f'Deck CONF {conf_deck} != pipeline {conf_actual} — update conference-deck/rag-truth-deck.html'
 assert rank_deck==rank_actual, f'Deck RANK {rank_deck} != pipeline {rank_actual} — update conference-deck/rag-truth-deck.html'
+assert corr_deck==corr_actual, f'Deck CORR {corr_deck} != eval {corr_actual} — update conference-deck/rag-truth-deck.html'
 setup(True)
 print('PASS: scoped evidence, canonical contract, no invented live check, status mutation, unknown date, deck ladder in sync. Reset to incomplete.')
