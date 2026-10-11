@@ -88,7 +88,7 @@
   .eyebrow {
     font-family: var(--disp);
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     letter-spacing: 0.26em;
     text-transform: uppercase;
     color: var(--cyan);
@@ -109,7 +109,7 @@
   h2.headline {
     font-family: var(--disp);
     font-weight: 700;
-    font-size: 40px;
+    font-size: 46px;
     line-height: 1.02;
     margin: 0;
     max-width: 1040px;
@@ -123,7 +123,7 @@
 
   .subhead {
     margin: 14px 0 0;
-    font-size: 19px;
+    font-size: 22px;
     line-height: 1.4;
     color: var(--muted);
     max-width: 940px;
@@ -145,7 +145,7 @@
     align-items: center;
     gap: 18px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 13px;
     color: var(--dim);
     letter-spacing: 0.08em;
     z-index: 20;
@@ -195,7 +195,7 @@
   }
   .tag {
     font-family: var(--disp);
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     font-weight: 600;
@@ -222,11 +222,11 @@
 
   /* ===== Slide 1 — title ========================================= */
   .title-slide { justify-content: center; }
-  .title-slide .eyebrow { font-size: 15px; }
+  .title-slide .eyebrow { font-size: 17px; }
   .big-title {
     font-family: var(--disp);
     font-weight: 700;
-    font-size: 76px;
+    font-size: 84px;
     line-height: 0.98;
     letter-spacing: -0.02em;
     margin: 10px 0 0;
@@ -235,7 +235,7 @@
   .big-title .glow { color: var(--cyan); text-shadow: 0 0 30px rgba(0, 229, 255, 0.5); }
   .title-slide .lead {
     margin: 26px 0 0;
-    font-size: 21px;
+    font-size: 24px;
     color: var(--muted);
     max-width: 620px;
     line-height: 1.45;
@@ -257,11 +257,11 @@
     background: rgba(255, 43, 214, 0.06);
     border-radius: 0 10px 10px 0;
     font-family: var(--mono);
-    font-size: 16px;
+    font-size: 18px;
     color: var(--white);
     max-width: 620px;
   }
-  .title-q .qmark { color: var(--magenta); font-size: 22px; }
+  .title-q .qmark { color: var(--magenta); font-size: 25px; }
 
   /* ===== generic two-column body ================================= */
   .cols {
@@ -283,17 +283,24 @@
   figure { margin: 0; display: flex; flex-direction: column; height: 100%; }
   figcaption {
     margin-top: 12px;
-    font-size: 13.5px;
+    font-size: 15px;
     color: var(--dim);
     font-family: var(--mono);
     letter-spacing: 0.02em;
+  }
+  .rag-loop figcaption {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 1.35;
+    color: var(--muted);
+    max-width: 540px;
   }
 
   .note-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
   .note-list li {
     display: flex;
     gap: 14px;
-    font-size: 16.5px;
+    font-size: 18.5px;
     line-height: 1.4;
     color: var(--white);
   }
@@ -301,7 +308,7 @@
     flex: none;
     font-family: var(--disp);
     font-weight: 700;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--cyan);
@@ -321,7 +328,7 @@
     border: 1px dashed rgba(255, 209, 102, 0.4);
     background: rgba(255, 209, 102, 0.06);
     border-radius: 10px;
-    font-size: 15px;
+    font-size: 17px;
     color: var(--amber);
     line-height: 1.4;
   }
@@ -347,12 +354,12 @@
   .step .n {
     font-family: var(--disp);
     font-weight: 700;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--dim);
   }
   .step .nm {
     font-family: var(--disp);
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--muted);
@@ -390,7 +397,7 @@
   .added-card .tag { color: var(--accent, var(--cyan)); }
   .added-card .added-text {
     margin: 8px 0 0;
-    font-size: 17px;
+    font-size: 18px;
     line-height: 1.4;
     color: var(--white);
   }
@@ -403,7 +410,7 @@
     align-items: center;
     justify-content: center;
   }
-  .mech svg { width: 100%; height: auto; max-height: 300px; }
+  .mech svg { width: 100%; height: auto; max-height: 276px; }
 
   /* answer card (right column) */
   .answer-card {
@@ -419,11 +426,11 @@
     padding: 14px 18px;
     border-bottom: 1px solid var(--line);
   }
-  .ac-head .who { font-family: var(--disp); font-size: 12px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .ac-head .who { font-family: var(--disp); font-size: 13px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
   .verdict {
     font-family: var(--disp);
     font-weight: 700;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 5px 12px;
@@ -438,7 +445,7 @@
 
   .ac-answer {
     padding: 16px 18px;
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.5;
     color: var(--white);
     flex: 1;
@@ -455,14 +462,14 @@
   }
   .metric { padding: 13px 18px; }
   .metric + .metric { border-left: 1px solid var(--line); }
-  .metric .tag { font-size: 10px; }
+  .metric .tag { font-size: 11px; }
   .conf-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
   .conf-track { flex: 1; height: 7px; border-radius: 4px; background: rgba(255,255,255,0.08); overflow: hidden; }
   .conf-track i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--cyan), var(--lime)); box-shadow: 0 0 10px rgba(0,229,255,.5); transition: width .5s; }
-  .conf-num { font-family: var(--disp); font-weight: 700; font-size: 20px; min-width: 60px; }
-  .rank-val { font-family: var(--disp); font-weight: 700; font-size: 22px; margin-top: 6px; }
-  .rank-val small { font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: .05em; }
-  .delta { font-size: 12.5px; color: var(--muted); font-family: var(--mono); margin-top: 4px; }
+  .conf-num { font-family: var(--disp); font-weight: 700; font-size: 22px; min-width: 60px; }
+  .rank-val { font-family: var(--disp); font-weight: 700; font-size: 24px; margin-top: 6px; }
+  .rank-val small { font-size: 14px; color: var(--muted); font-weight: 500; letter-spacing: .05em; }
+  .delta { font-size: 13.5px; color: var(--muted); font-family: var(--mono); margin-top: 4px; }
   .delta .up { color: var(--lime); }
   .delta .flat { color: var(--dim); }
 
@@ -474,9 +481,9 @@
     padding: 8px 9px;
     background: var(--panel-2);
   }
-  .doc .did { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .doc .dt { font-size: 12.5px; margin-top: 2px; line-height: 1.2; color: var(--white); }
-  .doc .ds { font-family: var(--disp); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; margin-top: 5px; }
+  .doc .did { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .doc .dt { font-size: 13.5px; margin-top: 2px; line-height: 1.2; color: var(--white); }
+  .doc .ds { font-family: var(--disp); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; margin-top: 5px; }
   .doc.dep { border-color: rgba(255,59,95,.5); background: rgba(255,59,95,.07); }
   .doc.dep .ds { color: var(--red); }
   .doc.key { border-color: rgba(0,229,255,.5); background: rgba(0,229,255,.07); }
@@ -485,7 +492,7 @@
   .doc.pol .ds { color: var(--lime); }
   .doc .ds.act { color: var(--dim); }
 
-  .legend { display: flex; gap: 18px; margin-top: 14px; font-size: 13px; color: var(--muted); font-family: var(--mono); }
+  .legend { display: flex; gap: 18px; margin-top: 14px; font-size: 14px; color: var(--muted); font-family: var(--mono); }
   .legend span { display: inline-flex; align-items: center; gap: 7px; }
   .legend i { width: 11px; height: 11px; border-radius: 3px; border: 1px solid; }
   .legend i.dep { border-color: var(--red); background: rgba(255,59,95,.2); }
@@ -495,7 +502,7 @@
   .pillrow { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
   .pill {
     font-family: var(--disp);
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 600;
@@ -509,8 +516,8 @@
   /* takeaway pillars */
   .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; }
   .pillar { border-radius: 12px; border: 1px solid var(--line); padding: 16px; background: var(--panel-2); }
-  .pillar .pn { font-family: var(--disp); font-weight: 700; font-size: 15px; letter-spacing: .04em; }
-  .pillar .pd { font-size: 13.5px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
+  .pillar .pn { font-family: var(--disp); font-weight: 700; font-size: 17px; letter-spacing: .04em; }
+  .pillar .pd { font-size: 15px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
 
   svg text { font-family: var(--mono); }
   .svg-label { font-family: var(--disp); font-weight: 600; }
@@ -672,7 +679,7 @@ const BUTTONS = [
     cap: "Correct table, but a live check blocks it: Germany's partition is incomplete.",
   },
   {
-    n: 8, key: "complete", name: "Mark complete", accent: "var(--lime)",
+    n: 8, key: "complete", name: "Data lands", accent: "var(--lime)",
     sub: "Nothing in the pipeline changes. Only the operational state flips: Germany's partition lands as complete.",
     addedTag: "No pipeline change — state flips",
     added: "We did <b>not</b> touch retrieval or any document. We flipped <b>operational state</b> (DE → complete). The answer changes because the world changed.",
@@ -695,26 +702,26 @@ function arrowDefs(id, color) {
 function mechNaive() {
   return `<svg viewBox="0 0 560 300" role="img" aria-label="Raw BM25 ranks a deprecated guide first">
     ${arrowDefs('aN', '#ff3b5f')}
-    <text x="20" y="28" class="svg-label" font-size="13" fill="#93a4b8" letter-spacing="2">16 DOCS · UNFILTERED</text>
+    <text x="20" y="28" class="svg-label" font-size="14" fill="#93a4b8" letter-spacing="2">16 DOCS · UNFILTERED</text>
     <g>
       ${[0,1,2,3,4,5,6,7].map((i)=>{const x=20+(i%4)*58,y=44+Math.floor(i/4)*34;const dep=i===0||i===3;return `<rect x="${x}" y="${y}" width="50" height="26" rx="4" fill="${dep?'rgba(255,59,95,.15)':'#0a0d19'}" stroke="${dep?'#ff3b5f':'#2a3444'}"/>`;}).join('')}
-      <text x="250" y="80" font-size="12" fill="#546070">…</text>
+      <text x="250" y="80" font-size="13" fill="#546070">…</text>
     </g>
     <line x1="20" y1="150" x2="540" y2="150" stroke="#2a3444" stroke-dasharray="3 4"/>
-    <text x="20" y="172" class="svg-label" font-size="13" fill="#ff3b5f" letter-spacing="2">BM25 RANKING →</text>
+    <text x="20" y="172" class="svg-label" font-size="14" fill="#ff3b5f" letter-spacing="2">BM25 RANKING →</text>
     ${[
       ['#1  01_legacy','deprecated guide','#ff3b5f',188],
       ['#2  07_slack_old','deprecated Slack','#ff3b5f',222],
       ['#4  02_contract','the real contract','#546070',256],
     ].map(([a,b,c,y])=>`
       <rect x="20" y="${y}" width="300" height="26" rx="5" fill="${c==='#ff3b5f'?'rgba(255,59,95,.12)':'#0a0d19'}" stroke="${c}"/>
-      <text x="32" y="${+y+17}" font-size="13" fill="${c==='#546070'?'#f8fafc':c}" font-weight="600">${a}</text>
-      <text x="150" y="${+y+17}" font-size="12" fill="#93a4b8">${b}</text>
+      <text x="32" y="${+y+17}" font-size="14" fill="${c==='#546070'?'#f8fafc':c}" font-weight="600">${a}</text>
+      <text x="172" y="${+y+17}" font-size="13" fill="#93a4b8">${b}</text>
     `).join('')}
     <path d="M335 201 L430 201" stroke="#ff3b5f" stroke-width="2" marker-end="url(#aN)"/>
     <rect x="434" y="184" width="106" height="36" rx="7" fill="rgba(255,59,95,.12)" stroke="#ff3b5f"/>
-    <text x="487" y="200" font-size="11" fill="#ff3b5f" text-anchor="middle" class="svg-label">ANSWER =</text>
-    <text x="487" y="214" font-size="10" fill="#f8fafc" text-anchor="middle">rank #1</text>
+    <text x="487" y="200" font-size="12" fill="#ff3b5f" text-anchor="middle" class="svg-label">ANSWER =</text>
+    <text x="487" y="214" font-size="11" fill="#f8fafc" text-anchor="middle">rank #1</text>
   </svg>`;
 }
 
@@ -722,20 +729,20 @@ function mechIndexing() {
   return `<svg viewBox="0 0 560 300" role="img" aria-label="Document indexed as title plus metadata plus text">
     ${arrowDefs('aI', '#8a5cff')}
     <rect x="20" y="60" width="190" height="180" rx="10" fill="#07111e" stroke="#2a3444"/>
-    <text x="36" y="88" class="svg-label" font-size="12" fill="#93a4b8" letter-spacing="2">RAW DOC</text>
+    <text x="36" y="88" class="svg-label" font-size="13" fill="#93a4b8" letter-spacing="2">RAW DOC</text>
     <rect x="36" y="100" width="158" height="30" rx="5" fill="#0a0d19" stroke="#2a3444"/>
-    <text x="46" y="120" font-size="12" fill="#546070">body text only</text>
+    <text x="46" y="120" font-size="13" fill="#546070">body text only</text>
     <path d="M224 150 L286 150" stroke="#8a5cff" stroke-width="2" marker-end="url(#aI)"/>
-    <text x="255" y="140" font-size="11" fill="#8a5cff" text-anchor="middle">index</text>
-    <rect x="300" y="40" width="240" height="220" rx="10" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
-    <text x="318" y="68" class="svg-label" font-size="12" fill="#8a5cff" letter-spacing="2">SEARCHABLE CHUNK</text>
+    <text x="255" y="140" font-size="12" fill="#8a5cff" text-anchor="middle">index</text>
+    <rect x="300" y="40" width="250" height="220" rx="10" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
+    <text x="318" y="68" class="svg-label" font-size="13" fill="#8a5cff" letter-spacing="2">SEARCHABLE CHUNK</text>
     ${[
       ['title','EU net revenue data contract'],
       ['metadata','EU · prod · active · internal'],
-      ['text','Canonical asset: fct_net_revenue_v2 …'],
+      ['text','Canonical: fct_net_revenue_v2 …'],
     ].map(([k,v],i)=>`
-      <rect x="316" y="${86+i*52}" width="208" height="42" rx="6" fill="#0a0d19" stroke="#3a3060"/>
-      <text x="328" y="${104+i*52}" font-size="11" fill="#8a5cff" class="svg-label" letter-spacing="1">${k.toUpperCase()}</text>
+      <rect x="316" y="${86+i*52}" width="226" height="42" rx="6" fill="#0a0d19" stroke="#3a3060"/>
+      <text x="328" y="${104+i*52}" font-size="12" fill="#8a5cff" class="svg-label" letter-spacing="1">${k.toUpperCase()}</text>
       <text x="328" y="${120+i*52}" font-size="11" fill="#cdd6e4">${v}</text>
     `).join('')}
   </svg>`;
@@ -744,27 +751,27 @@ function mechIndexing() {
 function mechMetadata() {
   return `<svg viewBox="0 0 560 300" role="img" aria-label="Metadata filter rejects deprecated documents">
     ${arrowDefs('aM', '#00e5ff')}
-    <text x="20" y="30" class="svg-label" font-size="13" fill="#93a4b8" letter-spacing="2">16 DOCS</text>
+    <text x="20" y="30" class="svg-label" font-size="14" fill="#93a4b8" letter-spacing="2">16 DOCS</text>
     ${[0,1,2,3,4,5].map(i=>`<rect x="20" y="${46+i*22}" width="110" height="16" rx="3" fill="#0a0d19" stroke="#2a3444"/>`).join('')}
     <path d="M140 110 L196 110" stroke="#00e5ff" stroke-width="2" marker-end="url(#aM)"/>
     <polygon points="210,54 330,54 300,120 240,120" fill="rgba(0,229,255,.08)" stroke="#00e5ff"/>
-    <text x="270" y="88" font-size="11" fill="#00e5ff" text-anchor="middle" class="svg-label">EU · PROD</text>
-    <text x="270" y="104" font-size="11" fill="#00e5ff" text-anchor="middle" class="svg-label">ACTIVE · INT</text>
+    <text x="270" y="88" font-size="12" fill="#00e5ff" text-anchor="middle" class="svg-label">EU · PROD</text>
+    <text x="270" y="104" font-size="12" fill="#00e5ff" text-anchor="middle" class="svg-label">ACTIVE · INT</text>
     <path d="M300 128 L300 170" stroke="#00e5ff" stroke-width="2" marker-end="url(#aM)"/>
-    <text x="356" y="92" font-size="12" fill="#546070">filter</text>
+    <text x="330" y="92" font-size="13" fill="#546070">filter</text>
     <rect x="236" y="178" width="130" height="30" rx="6" fill="rgba(0,229,255,.1)" stroke="#00e5ff"/>
-    <text x="301" y="198" font-size="12" fill="#00e5ff" text-anchor="middle" font-weight="600">scoped pool</text>
+    <text x="301" y="198" font-size="13" fill="#00e5ff" text-anchor="middle" font-weight="600">scoped pool</text>
     <g>
       <rect x="396" y="60" width="150" height="40" rx="7" fill="rgba(255,59,95,.1)" stroke="#ff3b5f"/>
-      <text x="408" y="78" font-size="12" fill="#ff3b5f" font-weight="600">01_legacy ✕</text>
-      <text x="408" y="92" font-size="10" fill="#93a4b8">deprecated → rejected</text>
+      <text x="408" y="78" font-size="13" fill="#ff3b5f" font-weight="600">01_legacy ✕</text>
+      <text x="408" y="92" font-size="11" fill="#93a4b8">deprecated → rejected</text>
       <rect x="396" y="108" width="150" height="40" rx="7" fill="rgba(255,59,95,.1)" stroke="#ff3b5f"/>
-      <text x="408" y="126" font-size="12" fill="#ff3b5f" font-weight="600">07_slack_old ✕</text>
-      <text x="408" y="140" font-size="10" fill="#93a4b8">deprecated → rejected</text>
+      <text x="408" y="126" font-size="13" fill="#ff3b5f" font-weight="600">07_slack_old ✕</text>
+      <text x="408" y="140" font-size="11" fill="#93a4b8">deprecated → rejected</text>
     </g>
     <path d="M300 193 L420 193" stroke="#00e5ff" stroke-width="2" marker-end="url(#aM)"/>
     <rect x="424" y="176" width="120" height="34" rx="7" fill="#0a0d19" stroke="#00e5ff"/>
-    <text x="484" y="197" font-size="12" fill="#f8fafc" text-anchor="middle">02_contract ↑</text>
+    <text x="484" y="197" font-size="13" fill="#f8fafc" text-anchor="middle">02_contract ↑</text>
   </svg>`;
 }
 
@@ -772,32 +779,32 @@ function mechExpansion() {
   return `<svg viewBox="0 0 560 300" role="img" aria-label="Query expanded with domain terms then fused">
     ${arrowDefs('aE', '#8a5cff')}
     <rect x="20" y="36" width="200" height="34" rx="7" fill="#0a0d19" stroke="#2a3444"/>
-    <text x="32" y="57" font-size="12" fill="#cdd6e4">"EU net revenue table?"</text>
+    <text x="32" y="57" font-size="13" fill="#cdd6e4">"EU net revenue table?"</text>
     <path d="M224 53 L270 53" stroke="#8a5cff" stroke-width="2" marker-end="url(#aE)"/>
-    <text x="300" y="30" class="svg-label" font-size="11" fill="#8a5cff" letter-spacing="2">+ DOMAIN TERMS</text>
-    ${['contract','VAT','refunds','currency / FX','completeness'].map((t,i)=>`
+    <text x="300" y="30" class="svg-label" font-size="12" fill="#8a5cff" letter-spacing="2">+ DOMAIN TERMS</text>
+    ${['contract','VAT','refunds','currency/FX','completeness'].map((t,i)=>`
       <rect x="${278+(i%3)*92}" y="${40+Math.floor(i/3)*34}" width="86" height="26" rx="13" fill="rgba(138,92,255,.12)" stroke="#8a5cff"/>
       <text x="${321+(i%3)*92}" y="${57+Math.floor(i/3)*34}" font-size="11" fill="#c4b5ff" text-anchor="middle">${t}</text>
     `).join('')}
     ${[0,1,2].map(i=>`
       <rect x="40" y="${150+i*34}" width="150" height="26" rx="5" fill="#0a0d19" stroke="#3a3060"/>
-      <text x="52" y="${167+i*34}" font-size="11" fill="#93a4b8">query variant ${i+1}</text>
+      <text x="52" y="${167+i*34}" font-size="12" fill="#93a4b8">query variant ${i+1}</text>
       <path d="M194 ${163+i*34} L250 ${215}" stroke="#3a3060" stroke-width="1.5"/>
     `).join('')}
     <rect x="252" y="196" width="130" height="40" rx="8" fill="rgba(138,92,255,.1)" stroke="#8a5cff"/>
-    <text x="317" y="214" font-size="12" fill="#8a5cff" text-anchor="middle" class="svg-label">RRF FUSE</text>
-    <text x="317" y="229" font-size="10" fill="#93a4b8" text-anchor="middle">reciprocal rank</text>
+    <text x="317" y="214" font-size="13" fill="#8a5cff" text-anchor="middle" class="svg-label">RRF FUSE</text>
+    <text x="317" y="229" font-size="11" fill="#93a4b8" text-anchor="middle">reciprocal rank</text>
     <path d="M386 216 L446 216" stroke="#8a5cff" stroke-width="2" marker-end="url(#aE)"/>
-    <rect x="450" y="199" width="94" height="34" rx="7" fill="#0a0d19" stroke="#00e5ff"/>
-    <text x="497" y="220" font-size="12" fill="#00e5ff" text-anchor="middle">02_contract #1</text>
+    <rect x="450" y="199" width="100" height="34" rx="7" fill="#0a0d19" stroke="#00e5ff"/>
+    <text x="500" y="220" font-size="12" fill="#00e5ff" text-anchor="middle">02_contract #1</text>
   </svg>`;
 }
 
 function mechRerank() {
   return `<svg viewBox="0 0 560 300" role="img" aria-label="Reranking lifts high quality evidence">
     ${arrowDefs('aR', '#ffd166')}
-    <text x="70" y="34" class="svg-label" font-size="12" fill="#93a4b8" letter-spacing="2">SHORTLIST</text>
-    <text x="420" y="34" class="svg-label" font-size="12" fill="#ffd166" letter-spacing="2">RERANKED</text>
+    <text x="70" y="34" class="svg-label" font-size="13" fill="#93a4b8" letter-spacing="2">SHORTLIST</text>
+    <text x="420" y="34" class="svg-label" font-size="13" fill="#ffd166" letter-spacing="2">RERANKED</text>
     ${[
       ['02_contract','#00e5ff',0,0],
       ['11_lineage','#546070',1,2],
@@ -805,29 +812,29 @@ function mechRerank() {
       ['04_metric','#00e5ff',3,1],
     ].map(([id,c,from,to])=>`
       <rect x="40" y="${50+from*52}" width="150" height="36" rx="6" fill="#0a0d19" stroke="${c}"/>
-      <text x="52" y="${72+from*52}" font-size="12" fill="${c==='#546070'?'#93a4b8':c}" font-weight="600">${id}</text>
+      <text x="52" y="${72+from*52}" font-size="13" fill="${c==='#546070'?'#93a4b8':c}" font-weight="600">${id}</text>
       <rect x="390" y="${50+to*52}" width="150" height="36" rx="6" fill="${c==='#00e5ff'?'rgba(0,229,255,.1)':'#0a0d19'}" stroke="${c}"/>
-      <text x="402" y="${72+to*52}" font-size="12" fill="${c==='#546070'?'#93a4b8':c}" font-weight="600">${id}</text>
+      <text x="402" y="${72+to*52}" font-size="13" fill="${c==='#546070'?'#93a4b8':c}" font-weight="600">${id}</text>
       <path d="M194 ${68+from*52} L386 ${68+to*52}" stroke="${c==='#546070'?'#2a3444':'#ffd166'}" stroke-width="${c==='#546070'?1.2:2}" ${c==='#546070'?'stroke-dasharray="3 4"':'marker-end="url(#aR)"'}/>
     `).join('')}
-    <text x="250" y="286" font-size="11" fill="#ffd166" text-anchor="middle">quality score reorders candidates</text>
+    <text x="250" y="286" font-size="12" fill="#ffd166" text-anchor="middle">quality score reorders candidates</text>
   </svg>`;
 }
 
 function mechAuthority() {
   const tiers = [['contract','#00e5ff'],['migration','#8a5cff'],['policy','#a6ff00'],['incident','#ffd166'],['catalog','#93a4b8'],['Slack','#ff2bd6'],['snapshot','#546070']];
   return `<svg viewBox="0 0 560 300" role="img" aria-label="Authority order from contract down to snapshot">
-    <text x="20" y="26" class="svg-label" font-size="12" fill="#ff2bd6" letter-spacing="2">AUTHORITY ORDER (applied after relevance)</text>
+    <text x="20" y="26" class="svg-label" font-size="13" fill="#ff2bd6" letter-spacing="2">AUTHORITY ORDER (applied after relevance)</text>
     ${tiers.map(([t,c],i)=>`
       <rect x="${20+i*2}" y="${44+i*32}" width="${300-i*2}" height="26" rx="5" fill="${i===0?'rgba(0,229,255,.12)':i===2?'rgba(166,255,0,.1)':'#0a0d19'}" stroke="${c}"/>
-      <text x="34" y="${61+i*32}" font-size="12" fill="${c}" font-weight="600">${i===0?'▸ ':''}${t}</text>
-      <text x="${300-i*2}" y="${61+i*32}" font-size="11" fill="#546070" text-anchor="end" dx="-10">tier ${i}</text>
+      <text x="34" y="${61+i*32}" font-size="13" fill="${c}" font-weight="600">${i===0?'▸ ':''}${t}</text>
+      <text x="${300-i*2}" y="${61+i*32}" font-size="12" fill="#546070" text-anchor="end" dx="-10">tier ${i}</text>
     `).join('')}
     <rect x="360" y="96" width="190" height="120" rx="10" fill="rgba(166,255,0,.07)" stroke="#a6ff00"/>
-    <text x="376" y="122" class="svg-label" font-size="11" fill="#a6ff00" letter-spacing="2">NOW SURFACED</text>
-    <text x="376" y="150" font-size="13" fill="#f8fafc" font-weight="600">09_freshness</text>
-    <text x="376" y="170" font-size="11" fill="#93a4b8">"trust yesterday only</text>
-    <text x="376" y="186" font-size="11" fill="#93a4b8">after a live check"</text>
+    <text x="376" y="122" class="svg-label" font-size="12" fill="#a6ff00" letter-spacing="2">NOW SURFACED</text>
+    <text x="376" y="150" font-size="14" fill="#f8fafc" font-weight="600">09_freshness</text>
+    <text x="376" y="170" font-size="12" fill="#93a4b8">"trust yesterday only</text>
+    <text x="376" y="186" font-size="12" fill="#93a4b8">after a live check"</text>
     <text x="376" y="206" font-size="11" fill="#a6ff00">→ opens the real question</text>
   </svg>`;
 }
@@ -837,9 +844,9 @@ function mechLive() {
     ${arrowDefs('aL', '#a6ff00')}
     ${arrowDefs('aLr', '#ff3b5f')}
     <rect x="20" y="70" width="210" height="90" rx="9" fill="#030712" stroke="#a6ff00"/>
-    <text x="36" y="94" class="svg-label" font-size="11" fill="#a6ff00" letter-spacing="2">PARAMETERIZED SQL</text>
-    <text x="36" y="118" font-size="11" fill="#cdd6e4">asset = fct_net_revenue_v2</text>
-    <text x="36" y="136" font-size="11" fill="#cdd6e4">business_date = 2026-10-09</text>
+    <text x="36" y="94" class="svg-label" font-size="12" fill="#a6ff00" letter-spacing="2">PARAMETERIZED SQL</text>
+    <text x="36" y="118" font-size="12" fill="#cdd6e4">asset = fct_net_revenue_v2</text>
+    <text x="36" y="136" font-size="12" fill="#cdd6e4">business_date = 2026-10-09</text>
     <path d="M234 115 L288 115" stroke="#a6ff00" stroke-width="2" marker-end="url(#aL)"/>
     ${[
       ['DE','incomplete','#ff3b5f',56],
@@ -847,38 +854,38 @@ function mechLive() {
       ['PL','complete','#a6ff00',164],
     ].map(([c,s,col,y])=>`
       <rect x="296" y="${y}" width="140" height="40" rx="7" fill="${col==='#ff3b5f'?'rgba(255,59,95,.12)':'rgba(166,255,0,.1)'}" stroke="${col}"/>
-      <text x="312" y="${+y+25}" font-size="14" fill="${col}" font-weight="700">${c}</text>
-      <text x="350" y="${+y+25}" font-size="12" fill="#cdd6e4">${s}</text>
+      <text x="312" y="${+y+25}" font-size="15" fill="${col}" font-weight="700">${c}</text>
+      <text x="350" y="${+y+25}" font-size="13" fill="#cdd6e4">${s}</text>
     `).join('')}
     <path d="M440 76 L480 110" stroke="#ff3b5f" stroke-width="2" marker-end="url(#aLr)"/>
     <path d="M440 130 L480 118" stroke="#a6ff00" stroke-width="1.4"/>
     <path d="M440 184 L480 126" stroke="#a6ff00" stroke-width="1.4"/>
     <rect x="470" y="96" width="78" height="56" rx="9" fill="rgba(255,59,95,.12)" stroke="#ff3b5f"/>
-    <text x="509" y="120" font-size="11" fill="#ff3b5f" text-anchor="middle" class="svg-label">GATE</text>
-    <text x="509" y="138" font-size="11" fill="#ff3b5f" text-anchor="middle">NOT READY</text>
-    <text x="300" y="226" font-size="11" fill="#93a4b8">one incomplete partition blocks the whole answer</text>
+    <text x="509" y="120" font-size="12" fill="#ff3b5f" text-anchor="middle" class="svg-label">GATE</text>
+    <text x="509" y="138" font-size="12" fill="#ff3b5f" text-anchor="middle">NOT READY</text>
+    <text x="280" y="226" font-size="12" fill="#93a4b8" text-anchor="middle">one incomplete partition blocks the whole answer</text>
   </svg>`;
 }
 
 function mechComplete() {
   return `<svg viewBox="0 0 560 300" role="img" aria-label="Operational state flips Germany to complete">
     ${arrowDefs('aC', '#8a5cff')}
-    <text x="20" y="40" class="svg-label" font-size="12" fill="#93a4b8" letter-spacing="2">BEFORE</text>
+    <text x="20" y="40" class="svg-label" font-size="13" fill="#93a4b8" letter-spacing="2">BEFORE</text>
     ${[['DE','incomplete','#ff3b5f'],['FR','complete','#a6ff00'],['PL','complete','#a6ff00']].map(([c,s,col],i)=>`
       <rect x="20" y="${54+i*42}" width="150" height="34" rx="6" fill="${col==='#ff3b5f'?'rgba(255,59,95,.1)':'#0a0d19'}" stroke="${col}"/>
-      <text x="34" y="${75+i*42}" font-size="13" fill="${col}" font-weight="700">${c}</text><text x="72" y="${75+i*42}" font-size="11" fill="#93a4b8">${s}</text>
+      <text x="34" y="${75+i*42}" font-size="14" fill="${col}" font-weight="700">${c}</text><text x="72" y="${75+i*42}" font-size="12" fill="#93a4b8">${s}</text>
     `).join('')}
     <rect x="210" y="110" width="140" height="56" rx="9" fill="rgba(138,92,255,.1)" stroke="#8a5cff"/>
-    <text x="280" y="134" font-size="11" fill="#8a5cff" text-anchor="middle" class="svg-label">STATE MUTATION</text>
-    <text x="280" y="152" font-size="11" fill="#cdd6e4" text-anchor="middle">--set-de complete</text>
+    <text x="280" y="134" font-size="12" fill="#8a5cff" text-anchor="middle" class="svg-label">STATE MUTATION</text>
+    <text x="280" y="152" font-size="12" fill="#cdd6e4" text-anchor="middle">--set-de complete</text>
     <path d="M174 128 L206 134" stroke="#8a5cff" stroke-width="1.6"/>
     <path d="M352 138 L388 138" stroke="#8a5cff" stroke-width="2" marker-end="url(#aC)"/>
-    <text x="398" y="40" class="svg-label" font-size="12" fill="#a6ff00" letter-spacing="2">AFTER</text>
+    <text x="398" y="40" class="svg-label" font-size="13" fill="#a6ff00" letter-spacing="2">AFTER</text>
     ${[['DE','complete'],['FR','complete'],['PL','complete']].map(([c,s],i)=>`
       <rect x="398" y="${54+i*42}" width="150" height="34" rx="6" fill="rgba(166,255,0,.1)" stroke="#a6ff00"/>
-      <text x="412" y="${75+i*42}" font-size="13" fill="#a6ff00" font-weight="700">${c}</text><text x="450" y="${75+i*42}" font-size="11" fill="#cdd6e4">${s}${c==='DE'?' ✓':''}</text>
+      <text x="412" y="${75+i*42}" font-size="14" fill="#a6ff00" font-weight="700">${c}</text><text x="450" y="${75+i*42}" font-size="12" fill="#cdd6e4">${s}${c==='DE'?' ✓':''}</text>
     `).join('')}
-    <text x="280" y="210" font-size="11" fill="#93a4b8" text-anchor="middle">same pipeline · same docs · the answer flips to READY</text>
+    <text x="280" y="210" font-size="12" fill="#93a4b8" text-anchor="middle">same pipeline · same docs · the answer flips to READY</text>
   </svg>`;
 }
 
@@ -896,17 +903,17 @@ function slideTitle() {
         <defs><marker id="aT" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#00e5ff"/></marker>
         <marker id="aT2" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#a6ff00"/></marker></defs>
         <rect x="40" y="30" width="150" height="78" rx="12" fill="rgba(0,229,255,.07)" stroke="#00e5ff"/>
-        <text x="60" y="60" class="svg-label" font-size="15" fill="#00e5ff">Documents</text>
-        <text x="60" y="82" font-size="11" fill="#93a4b8">contracts · guides</text>
-        <text x="60" y="97" font-size="11" fill="#93a4b8">Slack · incidents</text>
+        <text x="60" y="60" class="svg-label" font-size="16" fill="#00e5ff">Documents</text>
+        <text x="60" y="82" font-size="12" fill="#93a4b8">contracts · guides</text>
+        <text x="60" y="97" font-size="12" fill="#93a4b8">Slack · incidents</text>
         <rect x="230" y="166" width="150" height="78" rx="12" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
-        <text x="250" y="196" class="svg-label" font-size="15" fill="#8a5cff">Retriever</text>
-        <text x="250" y="218" font-size="11" fill="#93a4b8">ranked evidence</text>
-        <text x="250" y="233" font-size="11" fill="#93a4b8">+ full trace</text>
+        <text x="250" y="196" class="svg-label" font-size="16" fill="#8a5cff">Retriever</text>
+        <text x="250" y="218" font-size="12" fill="#93a4b8">ranked evidence</text>
+        <text x="250" y="233" font-size="12" fill="#93a4b8">+ full trace</text>
         <rect x="40" y="300" width="160" height="82" rx="12" fill="rgba(166,255,0,.07)" stroke="#a6ff00"/>
-        <text x="60" y="330" class="svg-label" font-size="15" fill="#a6ff00">Live state</text>
-        <text x="60" y="352" font-size="11" fill="#93a4b8">partition readiness</text>
-        <text x="60" y="367" font-size="11" fill="#93a4b8">from SQLite</text>
+        <text x="60" y="330" class="svg-label" font-size="16" fill="#a6ff00">Live state</text>
+        <text x="60" y="352" font-size="12" fill="#93a4b8">partition readiness</text>
+        <text x="60" y="367" font-size="12" fill="#93a4b8">from SQLite</text>
         <path d="M190 85 C 260 100, 300 130, 305 160" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aT)"/>
         <path d="M200 342 C 270 342, 300 300, 305 250" stroke="#a6ff00" stroke-width="2" fill="none" marker-end="url(#aT2)"/>
       </svg>
@@ -920,29 +927,29 @@ function slideWhatIsRag() {
     <h2 class="headline">RAG = give the model <span class="hl">your evidence</span> before it answers</h2>
     <p class="subhead">A plain LLM answers from frozen training memory — fluent, but ungrounded. RAG retrieves relevant documents at query time and makes the model answer <em>from them</em>, with citations.</p>
     <div class="cols c12 body">
-      <figure class="figwrap">
+      <figure class="figwrap rag-loop">
         <svg viewBox="0 0 560 300" role="img" aria-label="Retrieve augment generate loop grounded in a knowledge base">
           <defs><marker id="aG" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#00e5ff"/></marker></defs>
           <rect x="18" y="128" width="120" height="46" rx="9" fill="#0a0d19" stroke="#93a4b8"/>
-          <text x="78" y="156" font-size="13" fill="#f8fafc" text-anchor="middle" font-weight="600">Question</text>
+          <text x="78" y="156" font-size="14" fill="#f8fafc" text-anchor="middle" font-weight="600">Question</text>
           <rect x="190" y="40" width="150" height="64" rx="10" fill="rgba(0,229,255,.07)" stroke="#00e5ff"/>
-          <text x="265" y="66" font-size="13" fill="#00e5ff" text-anchor="middle" class="svg-label">RETRIEVE</text>
+          <text x="265" y="66" font-size="14" fill="#00e5ff" text-anchor="middle" class="svg-label">RETRIEVE</text>
           <text x="265" y="86" font-size="11" fill="#93a4b8" text-anchor="middle">top-k relevant chunks</text>
           <rect x="190" y="200" width="150" height="60" rx="10" fill="#0a0d19" stroke="#2a3444"/>
-          <text x="265" y="226" font-size="12" fill="#cdd6e4" text-anchor="middle" class="svg-label">KNOWLEDGE BASE</text>
-          <text x="265" y="245" font-size="11" fill="#93a4b8" text-anchor="middle">indexed documents</text>
+          <text x="265" y="226" font-size="13" fill="#cdd6e4" text-anchor="middle" class="svg-label">KNOWLEDGE BASE</text>
+          <text x="265" y="245" font-size="12" fill="#93a4b8" text-anchor="middle">indexed documents</text>
           <rect x="392" y="128" width="150" height="46" rx="10" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
-          <text x="467" y="150" font-size="13" fill="#8a5cff" text-anchor="middle" class="svg-label">GENERATE</text>
-          <text x="467" y="166" font-size="10" fill="#93a4b8" text-anchor="middle">answer from evidence</text>
+          <text x="467" y="150" font-size="14" fill="#8a5cff" text-anchor="middle" class="svg-label">GENERATE</text>
+          <text x="467" y="166" font-size="11" fill="#93a4b8" text-anchor="middle">answer from evidence</text>
           <path d="M138 148 C 160 130, 172 95, 189 80" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aG)"/>
           <path d="M265 200 L265 108" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aG)"/>
-          <text x="276" y="155" font-size="10" fill="#546070">search</text>
+          <text x="252" y="153" font-size="13" fill="#8b98aa" font-weight="600" text-anchor="end">search KB</text>
           <path d="M340 72 C 372 90, 384 110, 400 126" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aG)"/>
-          <text x="356" y="150" font-size="10" fill="#546070" transform="rotate(0)">+question</text>
+          <text x="365" y="116" font-size="13" fill="#8b98aa" font-weight="600" text-anchor="middle">+ query</text>
           <path d="M467 174 C 467 240, 360 285, 160 265 C 120 262, 110 220, 118 178" stroke="#8a5cff" stroke-width="1.6" fill="none" stroke-dasharray="4 5"/>
-          <text x="300" y="292" font-size="10" fill="#546070" text-anchor="middle">cited, grounded answer back to the user</text>
+          <text x="300" y="292" font-size="11" fill="#546070" text-anchor="middle">cited, grounded answer back to the user</text>
         </svg>
-        <figcaption>Retrieve → augment the prompt → generate. The knowledge base, not the model's memory, is the source of truth.</figcaption>
+        <figcaption>Retrieve → augment prompt → generate. The knowledge base is the source of truth.</figcaption>
       </figure>
       <ul class="note-list" style="justify-content:center">
         <li><span class="k">Why</span><span class="v">LLM memory is <b>frozen and lossy</b> — it invents plausible specifics. Your contracts, tables and policies aren't in it.</span></li>
@@ -962,20 +969,20 @@ function slideChunkIndex() {
         <svg viewBox="0 0 440 320" role="img" aria-label="A document is chunked then indexed lexically and densely">
           <defs><marker id="aCk" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#8a5cff"/></marker></defs>
           <rect x="20" y="20" width="110" height="150" rx="9" fill="#0a0d19" stroke="#2a3444"/>
-          <text x="36" y="44" class="svg-label" font-size="11" fill="#93a4b8">DOCUMENT</text>
+          <text x="36" y="44" class="svg-label" font-size="12" fill="#93a4b8">DOCUMENT</text>
           ${[0,1,2,3,4].map(i=>`<rect x="34" y="${56+i*20}" width="82" height="12" rx="2" fill="#1a2230"/>`).join('')}
           <path d="M134 95 L170 95" stroke="#8a5cff" stroke-width="2" marker-end="url(#aCk)"/>
-          <text x="152" y="86" font-size="10" fill="#8a5cff" text-anchor="middle">chunk</text>
-          ${[0,1,2].map(i=>`<rect x="180" y="${34+i*48}" width="96" height="36" rx="6" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/><text x="228" y="${56+i*48}" font-size="11" fill="#c4b5ff" text-anchor="middle">chunk ${i+1}</text>`).join('')}
+          <text x="152" y="86" font-size="11" fill="#8a5cff" text-anchor="middle">chunk</text>
+          ${[0,1,2].map(i=>`<rect x="180" y="${34+i*48}" width="96" height="36" rx="6" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/><text x="228" y="${56+i*48}" font-size="12" fill="#c4b5ff" text-anchor="middle">chunk ${i+1}</text>`).join('')}
           <path d="M280 95 L316 95" stroke="#8a5cff" stroke-width="2" marker-end="url(#aCk)"/>
           <rect x="322" y="30" width="100" height="44" rx="8" fill="#0a0d19" stroke="#00e5ff"/>
-          <text x="372" y="50" font-size="11" fill="#00e5ff" text-anchor="middle" class="svg-label">BM25</text>
-          <text x="372" y="65" font-size="9" fill="#93a4b8" text-anchor="middle">lexical</text>
+          <text x="372" y="50" font-size="12" fill="#00e5ff" text-anchor="middle" class="svg-label">BM25</text>
+          <text x="372" y="65" font-size="10" fill="#93a4b8" text-anchor="middle">lexical</text>
           <rect x="322" y="86" width="100" height="44" rx="8" fill="#0a0d19" stroke="#a6ff00"/>
-          <text x="372" y="106" font-size="11" fill="#a6ff00" text-anchor="middle" class="svg-label">DENSE</text>
-          <text x="372" y="121" font-size="9" fill="#93a4b8" text-anchor="middle">embeddings</text>
-          <text x="20" y="210" class="svg-label" font-size="11" fill="#93a4b8" letter-spacing="2">CHUNKING STRATEGIES</text>
-          ${['fixed-size + overlap','sentence / recursive','semantic (meaning-aware)'].map((t,i)=>`<text x="20" y="${232+i*22}" font-size="12" fill="#cdd6e4">• ${t}</text>`).join('')}
+          <text x="372" y="106" font-size="12" fill="#a6ff00" text-anchor="middle" class="svg-label">DENSE</text>
+          <text x="372" y="121" font-size="10" fill="#93a4b8" text-anchor="middle">embeddings</text>
+          <text x="20" y="210" class="svg-label" font-size="12" fill="#93a4b8" letter-spacing="2">CHUNKING STRATEGIES</text>
+          ${['fixed-size + overlap','sentence / recursive','semantic (meaning-aware)'].map((t,i)=>`<text x="20" y="${232+i*22}" font-size="13" fill="#cdd6e4">• ${t}</text>`).join('')}
         </svg>
         <figcaption>Split documents into retrievable units, then build the index(es) you'll search against.</figcaption>
       </figure>
@@ -1000,37 +1007,37 @@ function slideRetrievalRerank() {
       <svg viewBox="0 0 1160 300" role="img" aria-label="Query flows through expansion hybrid retrieval fusion reranking and policy to top-k">
         <defs><marker id="aP" markerWidth="10" markerHeight="10" refX="7" refY="4.5" orient="auto"><polygon points="0,0 9,4.5 0,9" fill="#00e5ff"/></marker></defs>
         <rect x="10" y="120" width="120" height="56" rx="10" fill="#0a0d19" stroke="#93a4b8"/>
-        <text x="70" y="146" font-size="13" fill="#f8fafc" text-anchor="middle" font-weight="600">Query</text>
-        <text x="70" y="164" font-size="10" fill="#93a4b8" text-anchor="middle">user question</text>
+        <text x="70" y="146" font-size="14" fill="#f8fafc" text-anchor="middle" font-weight="600">Query</text>
+        <text x="70" y="164" font-size="11" fill="#93a4b8" text-anchor="middle">user question</text>
         <rect x="170" y="120" width="130" height="56" rx="10" fill="rgba(138,92,255,.08)" stroke="#8a5cff"/>
-        <text x="235" y="143" font-size="12" fill="#8a5cff" text-anchor="middle" class="svg-label">EXPAND</text>
-        <text x="235" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">rewrite + synonyms</text>
+        <text x="235" y="143" font-size="13" fill="#8a5cff" text-anchor="middle" class="svg-label">EXPAND</text>
+        <text x="235" y="161" font-size="11" fill="#93a4b8" text-anchor="middle">rewrite + synonyms</text>
         <rect x="340" y="56" width="130" height="52" rx="10" fill="rgba(0,229,255,.07)" stroke="#00e5ff"/>
-        <text x="405" y="80" font-size="12" fill="#00e5ff" text-anchor="middle" class="svg-label">BM25 LANE</text>
-        <text x="405" y="97" font-size="10" fill="#93a4b8" text-anchor="middle">lexical</text>
+        <text x="405" y="80" font-size="13" fill="#00e5ff" text-anchor="middle" class="svg-label">BM25 LANE</text>
+        <text x="405" y="97" font-size="11" fill="#93a4b8" text-anchor="middle">lexical</text>
         <rect x="340" y="188" width="130" height="52" rx="10" fill="rgba(166,255,0,.07)" stroke="#a6ff00"/>
-        <text x="405" y="212" font-size="12" fill="#a6ff00" text-anchor="middle" class="svg-label">DENSE LANE</text>
-        <text x="405" y="229" font-size="10" fill="#93a4b8" text-anchor="middle">embeddings</text>
+        <text x="405" y="212" font-size="13" fill="#a6ff00" text-anchor="middle" class="svg-label">DENSE LANE</text>
+        <text x="405" y="229" font-size="11" fill="#93a4b8" text-anchor="middle">embeddings</text>
         <rect x="510" y="120" width="120" height="56" rx="10" fill="#0a0d19" stroke="#8a5cff"/>
-        <text x="570" y="143" font-size="12" fill="#8a5cff" text-anchor="middle" class="svg-label">RRF FUSE</text>
-        <text x="570" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">merge rankings</text>
+        <text x="570" y="143" font-size="13" fill="#8a5cff" text-anchor="middle" class="svg-label">RRF FUSE</text>
+        <text x="570" y="161" font-size="11" fill="#93a4b8" text-anchor="middle">merge rankings</text>
         <rect x="670" y="120" width="130" height="56" rx="10" fill="rgba(255,209,102,.08)" stroke="#ffd166"/>
-        <text x="735" y="143" font-size="12" fill="#ffd166" text-anchor="middle" class="svg-label">RERANK</text>
-        <text x="735" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">cross-encoder</text>
-        <rect x="840" y="120" width="130" height="56" rx="10" fill="rgba(255,43,214,.08)" stroke="#ff2bd6"/>
-        <text x="905" y="143" font-size="12" fill="#ff2bd6" text-anchor="middle" class="svg-label">POLICY</text>
-        <text x="905" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">authority + metadata</text>
+        <text x="735" y="143" font-size="13" fill="#ffd166" text-anchor="middle" class="svg-label">RERANK</text>
+        <text x="735" y="161" font-size="11" fill="#93a4b8" text-anchor="middle">cross-encoder</text>
+        <rect x="830" y="120" width="150" height="56" rx="10" fill="rgba(255,43,214,.08)" stroke="#ff2bd6"/>
+        <text x="905" y="143" font-size="13" fill="#ff2bd6" text-anchor="middle" class="svg-label">POLICY</text>
+        <text x="905" y="161" font-size="11" fill="#93a4b8" text-anchor="middle">authority + metadata</text>
         <rect x="1010" y="120" width="130" height="56" rx="10" fill="#0a0d19" stroke="#00e5ff"/>
-        <text x="1075" y="143" font-size="13" fill="#00e5ff" text-anchor="middle" font-weight="700">TOP-k</text>
-        <text x="1075" y="161" font-size="10" fill="#93a4b8" text-anchor="middle">evidence → LLM</text>
+        <text x="1075" y="143" font-size="14" fill="#00e5ff" text-anchor="middle" font-weight="700">TOP-k</text>
+        <text x="1075" y="161" font-size="11" fill="#93a4b8" text-anchor="middle">evidence → LLM</text>
         <path d="M130 148 L166 148" stroke="#00e5ff" stroke-width="2" marker-end="url(#aP)"/>
         <path d="M300 140 C 320 110, 326 95, 338 86" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aP)"/>
         <path d="M300 156 C 320 190, 326 205, 338 212" stroke="#a6ff00" stroke-width="2" fill="none" marker-end="url(#aP)"/>
         <path d="M470 86 C 492 110, 498 120, 508 134" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aP)"/>
         <path d="M470 212 C 492 190, 498 180, 508 162" stroke="#a6ff00" stroke-width="2" fill="none" marker-end="url(#aP)"/>
         <path d="M630 148 L666 148" stroke="#8a5cff" stroke-width="2" marker-end="url(#aP)"/>
-        <path d="M800 148 L836 148" stroke="#ffd166" stroke-width="2" marker-end="url(#aP)"/>
-        <path d="M970 148 L1006 148" stroke="#ff2bd6" stroke-width="2" marker-end="url(#aP)"/>
+        <path d="M800 148 L826 148" stroke="#ffd166" stroke-width="2" marker-end="url(#aP)"/>
+        <path d="M980 148 L1006 148" stroke="#ff2bd6" stroke-width="2" marker-end="url(#aP)"/>
       </svg>
       <figcaption>Query expansion → hybrid lexical + dense retrieval → reciprocal-rank fusion → cross-encoder rerank → authority / metadata policy → top-k. The demo's buttons switch these stages on one at a time.</figcaption>
     </figure>
@@ -1065,17 +1072,17 @@ function slideUseCase() {
             <defs><marker id="aU" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#00e5ff"/></marker>
             <marker id="aU2" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><polygon points="0,0 8,4 0,8" fill="#a6ff00"/></marker></defs>
             <rect x="200" y="58" width="110" height="34" rx="8" fill="#0a0d19" stroke="#93a4b8"/>
-            <text x="255" y="79" font-size="12" fill="#f8fafc" text-anchor="middle" font-weight="600">the question</text>
+            <text x="255" y="79" font-size="13" fill="#f8fafc" text-anchor="middle" font-weight="600">the question</text>
             <path d="M310 66 C 360 50, 380 36, 404 32" stroke="#00e5ff" stroke-width="2" fill="none" marker-end="url(#aU)"/>
             <path d="M310 84 C 360 100, 380 114, 404 118" stroke="#a6ff00" stroke-width="2" fill="none" marker-end="url(#aU2)"/>
             <rect x="408" y="14" width="108" height="40" rx="8" fill="rgba(0,229,255,.07)" stroke="#00e5ff"/>
-            <text x="462" y="32" font-size="11" fill="#00e5ff" text-anchor="middle" class="svg-label">WHICH TABLE?</text>
-            <text x="462" y="47" font-size="10" fill="#93a4b8" text-anchor="middle">historical meaning</text>
+            <text x="462" y="32" font-size="12" fill="#00e5ff" text-anchor="middle" class="svg-label">WHICH TABLE?</text>
+            <text x="462" y="47" font-size="11" fill="#93a4b8" text-anchor="middle">historical meaning</text>
             <rect x="408" y="98" width="108" height="40" rx="8" fill="rgba(166,255,0,.07)" stroke="#a6ff00"/>
-            <text x="462" y="116" font-size="11" fill="#a6ff00" text-anchor="middle" class="svg-label">TRUST IT?</text>
-            <text x="462" y="131" font-size="10" fill="#93a4b8" text-anchor="middle">live state now</text>
-            <text x="60" y="40" font-size="12" fill="#00e5ff">lives in</text><text x="60" y="56" font-size="12" fill="#00e5ff">documents</text>
-            <text x="70" y="104" font-size="12" fill="#a6ff00">lives in the</text><text x="70" y="120" font-size="12" fill="#a6ff00">warehouse</text>
+            <text x="462" y="116" font-size="12" fill="#a6ff00" text-anchor="middle" class="svg-label">TRUST IT?</text>
+            <text x="462" y="131" font-size="11" fill="#93a4b8" text-anchor="middle">live state now</text>
+            <text x="60" y="40" font-size="13" fill="#00e5ff">lives in</text><text x="60" y="56" font-size="13" fill="#00e5ff">documents</text>
+            <text x="70" y="104" font-size="13" fill="#a6ff00">lives in the</text><text x="70" y="120" font-size="13" fill="#a6ff00">warehouse</text>
           </svg>
           <figcaption>Two risks hide in one sentence: pick the right table, and prove today's data is usable.</figcaption>
         </figure>
@@ -1110,7 +1117,7 @@ function slideButton(b, idx) {
     <p class="eyebrow" style="color:${b.accent}">Button 0${b.n} of 08 <span class="seg">·</span> ${b.name}</p>
     <h2 class="headline">${b.name} <span style="color:${b.accent}">—</span> ${b.verdict}</h2>
     <p class="subhead">${b.sub}</p>
-    <div class="body" style="margin-top:18px">
+    <div class="body" style="margin-top:12px">
       <div class="stepper">${steps}</div>
       <div class="bslide-body">
         <div class="whatsnew">
@@ -1169,19 +1176,19 @@ function slideTakeaway() {
             <stop offset="0%" stop-color="#ff3b5f"/><stop offset="45%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#a6ff00"/>
           </linearGradient>
         </defs>
-        ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#1a2230"/><text x="${pad-8}" y="${y+4}" font-size="10" fill="#546070" text-anchor="end">${g}</text>`;}).join('')}
+        ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#1a2230"/><text x="${pad-8}" y="${y+4}" font-size="11" fill="#546070" text-anchor="end">${g}</text>`;}).join('')}
         <polygon points="${area}" fill="url(#confFill)"/>
         <polyline points="${line}" fill="none" stroke="url(#confLine)" stroke-width="3"/>
         ${CONF.map((c,i)=>`
           <circle cx="${xs[i].toFixed(1)}" cy="${ys[i].toFixed(1)}" r="${i===0||i===n-1?6:4.5}" fill="${BUTTONS[i].accent}" stroke="#02030a" stroke-width="2"/>
-          <text x="${xs[i].toFixed(1)}" y="${(ys[i]-14).toFixed(1)}" font-size="13" fill="${BUTTONS[i].accent}" text-anchor="middle" class="svg-label" font-weight="700">${c}</text>
-          <text x="${xs[i].toFixed(1)}" y="${h-12}" font-size="10" fill="#93a4b8" text-anchor="middle">0${i+1}</text>
-          <text x="${xs[i].toFixed(1)}" y="${h-1}" font-size="9" fill="#546070" text-anchor="middle">${labels[i].split(' ')[0]}</text>
+          <text x="${xs[i].toFixed(1)}" y="${(ys[i]-14).toFixed(1)}" font-size="14" fill="${BUTTONS[i].accent}" text-anchor="middle" class="svg-label" font-weight="700">${c}</text>
+          <text x="${xs[i].toFixed(1)}" y="${h-12}" font-size="11" fill="#93a4b8" text-anchor="middle">0${i+1}</text>
+          <text x="${xs[i].toFixed(1)}" y="${h-1}" font-size="10" fill="#546070" text-anchor="middle">${labels[i].split(' ')[0]}</text>
         `).join('')}
         <line x1="${xs[2].toFixed(1)}" y1="20" x2="${xs[2].toFixed(1)}" y2="${h-30}" stroke="#00e5ff" stroke-dasharray="3 5" opacity="0.5"/>
-        <text x="${(+xs[2]+6).toFixed(1)}" y="34" font-size="10" fill="#00e5ff">stale docs filtered out</text>
+        <text x="${(+xs[2]+6).toFixed(1)}" y="34" font-size="11" fill="#00e5ff">stale docs filtered out</text>
         <line x1="${xs[6].toFixed(1)}" y1="20" x2="${xs[6].toFixed(1)}" y2="${h-30}" stroke="#a6ff00" stroke-dasharray="3 5" opacity="0.5"/>
-        <text x="${(+xs[6]-6).toFixed(1)}" y="34" font-size="10" fill="#a6ff00" text-anchor="end">live check gates the answer</text>
+        <text x="${(+xs[6]-6).toFixed(1)}" y="34" font-size="11" fill="#a6ff00" text-anchor="end">live check gates the answer</text>
       </svg>
       <figcaption>Retrieval confidence (0–99), captured from the live demo at each of the eight stages.</figcaption>
     </figure>
@@ -1212,7 +1219,7 @@ function slideEvals() {
     <h2 class="headline">Don't trust the climb &mdash; <span class="hl lime">grade every stage</span> against the final answer</h2>
     <figure class="figwrap body" style="flex:none;margin-top:16px">
       <svg viewBox="0 0 1040 300" role="img" aria-label="Answer correctness versus the final tuned answer climbs from 0 to 100 percent across the eight stages">
-        ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#1a2230"/><text x="${pad-8}" y="${y+4}" font-size="10" fill="#546070" text-anchor="end">${g}</text>`;}).join('')}
+        ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#1a2230"/><text x="${pad-8}" y="${y+4}" font-size="11" fill="#546070" text-anchor="end">${g}</text>`;}).join('')}
         ${CORR.map((p,i)=>{
           const bh = (p/100)*(h-70);
           const y = h-30-bh;
@@ -1221,9 +1228,9 @@ function slideEvals() {
             ? `<line x1="${x.toFixed(1)}" y1="${(h-30).toFixed(1)}" x2="${(x+bw).toFixed(1)}" y2="${(h-30).toFixed(1)}" stroke="${col(p)}" stroke-width="3"/>`
             : `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="4" fill="${col(p)}" fill-opacity="0.85"/>`;
           return `${bar}
-          <text x="${cx[i].toFixed(1)}" y="${(y-10).toFixed(1)}" font-size="13" fill="${col(p)}" text-anchor="middle" class="svg-label" font-weight="700">${p}%</text>
-          <text x="${cx[i].toFixed(1)}" y="${h-12}" font-size="10" fill="#93a4b8" text-anchor="middle">0${i+1}</text>
-          <text x="${cx[i].toFixed(1)}" y="${h-1}" font-size="9" fill="#546070" text-anchor="middle">${labels[i].split(' ')[0]}</text>`;
+          <text x="${cx[i].toFixed(1)}" y="${(y-10).toFixed(1)}" font-size="14" fill="${col(p)}" text-anchor="middle" class="svg-label" font-weight="700">${p}%</text>
+          <text x="${cx[i].toFixed(1)}" y="${h-12}" font-size="11" fill="#93a4b8" text-anchor="middle">0${i+1}</text>
+          <text x="${cx[i].toFixed(1)}" y="${h-1}" font-size="10" fill="#546070" text-anchor="middle">${labels[i].split(' ')[0]}</text>`;
         }).join('')}
       </svg>
       <figcaption>Answer-correctness vs. the fully-tuned final answer, scored by <code>scripts/eval_confidence.py</code> &mdash; a reproducible rubric eval over the eight stages, not a calibrated probability (n&nbsp;=&nbsp;8).</figcaption>

@@ -9,7 +9,7 @@
 5. Натиснете Reranking. Deterministic reranker подрежда evidence по качество — по-силен corroborating източник влиза в top-5 (вижте как Evidence панелът се пренарежда). Препоръката вече е правилна, затова заглавието не се мени; confidence се вдига до ~67. Честно: при вече добър retrieval reranking мести малко.
 6. Натиснете Authority policy. Contracts печелят пред Slack/guide/catalog; influх на freshness/FX policy документи кара отговора да изисква live check вместо да гадае. Confidence ~82.
 7. Натиснете Add live check. Параметризираната SQLite проверка показва incomplete за DE → NOT ready. „Историческото знание обяснява данните. Live evidence определя дали са приложими сега." Confidence ~94.
-8. Натиснете Mark complete. „Не сменихме документацията. Сменихме operational state и отговорът се промени." Confidence ~99. Уточнете, че това доказва partition completeness, не всички quality checks.
+8. Натиснете Data lands. „Не сменихме документацията. Сменихме operational state и отговорът се промени." Confidence ~99. Уточнете, че това доказва partition completeness, не всички quality checks.
 9. „Подобрението се доказва с измерване. Едно красиво демо не е evaluation."
 
 За сцената използвайте neural + --llm само след предварителна репетиция. Offline режимът е самостоятелна, ясно обозначена илюстрация на retrieval и live evidence, не доказателство за поведението на LLM. Примерните JSON файлове са резервен запис на offline резултати. Преди всяка репетиция: python3 scripts/demo.py --reset.

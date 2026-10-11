@@ -35,7 +35,7 @@ python3 scripts/eval_confidence.py --json
 
 Всеки отговор носи и „Retrieval confidence" (0–100) — детерминистичен grounding score, изчислен само от evidence + live status (вижте `confidence_breakdown` в demo.py за точковия разбор). Той расте по стъпките (~32 → 38 → 60 → 66 → 67 → 82 → 94 → 99), защото retrieval изхвърля stale източници, вдига canonical contract, surface-ва currency + freshness политиките и live check-ът решава readiness. Числото е reproducible от резултатния JSON, не е ръчно зададено. Честно уточнение: при reranking препоръката вече е правилна, затова заглавието не се мени — видимият ефект е пренареждане на evidence панела + лек ръст на confidence.
 
-В UI бутоните са наредени кумулативно: Naive search → Indexing → Metadata filter → Query expansion → Reranking → Authority policy → Add live check → Mark complete. Всеки следващ сценарий добавя един слой върху предишния.
+В UI бутоните са наредени кумулативно: Naive search → Indexing → Metadata filter → Query expansion → Reranking → Authority policy → Add live check → Data lands. Всеки следващ сценарий добавя един слой върху предишния.
 
 ## Истински embeddings, hybrid retrieval и cross-encoder
 
