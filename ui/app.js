@@ -1,6 +1,8 @@
 const state = {
   selected: "naive",
   lastResult: null,
+  evalOn: false,
+  evalData: null,
 };
 
 const steps = {
@@ -23,6 +25,8 @@ const el = {
   steps: [...document.querySelectorAll(".step")],
   clearChatBtn: document.querySelector("#clearChatBtn"),
   status: document.querySelector("#status"),
+  evalToggle: document.querySelector("#evalToggle"),
+  evalReadout: document.querySelector("#evalReadout"),
   modeBadge: document.querySelector("#modeBadge"),
   chat: document.querySelector("#chat"),
   readiness: document.querySelector("#readiness"),
@@ -56,6 +60,60 @@ function setStatus(text, tone = "") {
 function selectStep(name) {
   state.selected = name;
   el.steps.forEach((step) => step.classList.toggle("active", step.dataset.step === name));
+  if (state.evalOn) renderEvalReadout();
+}
+
+// --- Eval overlay -------------------------------------------------------
+// Precomputed, deterministic per-stage "answer-correctness" (% of the final
+// answer's rubric each stage satisfies). Fetched once from /api/eval and cached;
+// the readout shows the value for whichever stage is currently selected.
+async function ensureEvalData() {
+  if (state.evalData) return state.evalData;
+  const response = await fetch("/api/eval");
+  const data = await response.json();
+  if (!data.ok) throw new Error(data.error || "Eval failed");
+  state.evalData = data.result;
+  return state.evalData;
+}
+
+function renderEvalReadout() {
+  const data = state.evalData;
+  if (!data) return;
+  const pct = (data.correctness_by_key || {})[state.selected];
+  const row = (data.rows || []).find((r) => r.key === state.selected);
+  if (typeof pct !== "number") {
+    el.evalReadout.hidden = true;
+    return;
+  }
+  const band = pct < 40 ? "not-ready" : pct < 80 ? "unknown" : "ready";
+  const passed = row ? row.correctness_passed : "?";
+  const total = row ? row.correctness_total : "?";
+  el.evalReadout.hidden = false;
+  el.evalReadout.className = `eval-readout ${band}`;
+  el.evalReadout.innerHTML = `
+    <span class="eval-readout-label">ANSWER CORRECTNESS</span>
+    <b class="eval-readout-num">${pct}%</b>
+    <span class="eval-readout-sub">${passed}/${total} vs. final target</span>
+  `;
+}
+
+async function setEvalOn(on) {
+  state.evalOn = on;
+  if (!on) {
+    el.evalReadout.hidden = true;
+    return;
+  }
+  try {
+    el.evalReadout.hidden = false;
+    el.evalReadout.className = "eval-readout";
+    el.evalReadout.innerHTML = `<span class="eval-readout-label">EVAL…</span>`;
+    await ensureEvalData();
+    renderEvalReadout();
+  } catch (error) {
+    el.evalReadout.className = "eval-readout not-ready";
+    el.evalReadout.innerHTML = `<span class="eval-readout-label">EVAL ERROR</span>`;
+    setStatus(error.message, "var(--red)");
+  }
 }
 
 function requestForSelected(extra = {}) {
@@ -498,6 +556,10 @@ el.steps.forEach((step) => {
 el.copyBtn.addEventListener("click", async () => {
   await navigator.clipboard.writeText(el.rawJson.textContent);
   setStatus("Copied JSON", "var(--lime)");
+});
+
+el.evalToggle.addEventListener("change", (event) => {
+  setEvalOn(event.target.checked);
 });
 
 async function resetDemoState() {

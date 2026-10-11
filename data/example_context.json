@@ -75,5 +75,6 @@
     }
   ],
   "live_status": null,
-  "answer": "Use finance.fct_net_revenue_v2 [02_contract]. Values are local currency: convert before cross-currency aggregation [02_contract/04_metric]. Current readiness is UNKNOWN: no live check was performed."
+  "confidence": 82,
+  "answer": "Use finance.fct_net_revenue_v2 [02_contract] — the canonical contract is now the top source. Values are local currency: convert before cross-currency EU totals [04_metric]. Freshness policy [09_freshness] says yesterday is trustworthy only after a live partition check — that check has not run yet. Retrieval confidence 82/100."
 }

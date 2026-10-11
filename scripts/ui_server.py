@@ -14,6 +14,58 @@ UI_DIR = ROOT / "ui"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from demo import QUESTION, run, setup  # noqa: E402
+from eval_confidence import run_eval  # noqa: E402
+
+# The seed eval is fully deterministic (same 8 stages, same labels every time),
+# so its metrics never change. Compute once, cache, and serve the cached copy —
+# this keeps the toggle instant AND means it never mutates the live demo DB.
+_EVAL_CACHE: dict | None = None
+
+
+def _snapshot_partitions() -> list[tuple]:
+    import sqlite3
+
+    with sqlite3.connect(setup()) as conn:
+        return conn.execute(
+            "SELECT asset, business_date, country, status FROM partitions"
+        ).fetchall()
+
+
+def _restore_partitions(rows: list[tuple]) -> None:
+    import sqlite3
+
+    with sqlite3.connect(setup()) as conn:
+        conn.execute("DELETE FROM partitions")
+        conn.executemany("INSERT INTO partitions VALUES (?, ?, ?, ?)", rows)
+
+
+def eval_report() -> dict:
+    """Run (or return cached) seed eval, then expose a single calibrated-confidence
+    percentage derived from the grounding ECE. run_eval() resets the operational
+    DB as a side effect, so we snapshot and restore the presenter's live state."""
+    global _EVAL_CACHE
+    if _EVAL_CACHE is not None:
+        return _EVAL_CACHE
+
+    snapshot = _snapshot_partitions()
+    try:
+        report = run_eval()
+    finally:
+        _restore_partitions(snapshot)
+
+    m = report["metrics"]
+    report["display"] = {
+        # One number, per the demo UI: grounding calibration = (1 - ECE) x 100.
+        "calibrated_confidence_pct": round((1 - m["grounded_ece"]) * 100),
+        "basis": "grounding calibration = (1 − ECE) × 100%, over 8 demo stages",
+        "grounded_ece": m["grounded_ece"],
+        "grounded_brier": m["grounded_brier"],
+        "resolved_ece": m["resolved_ece"],
+        "resolved_brier": m["resolved_brier"],
+        "n_stages": len(report["rows"]),
+    }
+    _EVAL_CACHE = report
+    return report
 
 
 def json_response(handler: BaseHTTPRequestHandler, status: int, payload: dict) -> None:
@@ -34,6 +86,13 @@ class DemoHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         if self.path == "/api/defaults":
             json_response(self, 200, {"question": QUESTION, "date": "2026-10-09"})
+            return
+
+        if self.path == "/api/eval":
+            try:
+                json_response(self, 200, {"ok": True, "result": eval_report()})
+            except Exception as exc:  # Keep the UI useful during live demos.
+                json_response(self, 500, {"ok": False, "error": str(exc)})
             return
 
         route = self.path.split("?", 1)[0]

@@ -70,5 +70,6 @@
     }
   ],
   "live_status": null,
-  "answer": "Naive retrieval is risky: the top source points to finance.daily_revenue [01_legacy], but that source is deprecated. Verify against a current contract before using it. Current readiness is UNKNOWN: no live check was performed."
+  "confidence": 32,
+  "answer": "Use finance.daily_revenue for EU net revenue [01_legacy] — it is the top source retrieved. The canonical contract [02_contract] is outranked, down at position 4. Yesterday's data is ready to use. Retrieval confidence 32/100."
 }
