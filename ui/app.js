@@ -623,3 +623,24 @@ el.clearChatBtn.addEventListener("click", async () => {
   }
 });
 selectStep("naive");
+
+// --- Deck integration -------------------------------------------------------
+// When this demo runs inside the conference deck's iframe, clicking into it
+// moves focus here, so the deck's own keydown (Esc to close, D to toggle,
+// arrows to navigate) never fires. Forward those keys up to the parent. Works
+// cross-origin, which the deck's same-origin handler mirror does not.
+if (window.parent && window.parent !== window) {
+  window.addEventListener("keydown", (e) => {
+    const k = e.key;
+    // Esc closes the demo overlay. If the user is mid-edit in a field, first
+    // Esc just drops focus out of the field; a second Esc returns to slides.
+    if (k === "Escape") {
+      const t = document.activeElement;
+      const editing = t && (t.tagName === "TEXTAREA" || t.tagName === "INPUT");
+      if (editing) { t.blur(); return; }
+    }
+    if (k === "Escape" || k === "d" || k === "D") {
+      window.parent.postMessage({ type: "deck-key", key: k }, "*");
+    }
+  });
+}

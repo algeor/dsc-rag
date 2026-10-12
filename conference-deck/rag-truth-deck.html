@@ -440,12 +440,14 @@
   .verdict.mag { color: var(--magenta); background: rgba(165,44,117,0.12); }
 
   .ac-answer {
+    margin: 0;
     padding: 16px 18px;
-    font-size: 17px;
-    line-height: 1.5;
+    font-size: 16px;
+    line-height: 1.45;
     color: var(--white);
     flex: 1;
     min-height: 0;
+    overflow: auto;
   }
   .ac-answer .tbl { font-family: var(--mono); color: var(--cyan); font-weight: 600; }
   .ac-answer .tbl.dep { color: var(--red); text-decoration: line-through; text-decoration-color: rgba(192,57,43,.6); }
@@ -614,7 +616,6 @@ const BUTTONS = [
     added: "Plain keyword relevance (BM25) across <b>every</b> document, stale or not. The system trusts rank&nbsp;#1 blindly.",
     verdict: "Confidently wrong", vclass: "bad",
     answer: 'Use <span class="tbl dep">finance.daily_revenue</span> [01_legacy] — it is the top source retrieved. The canonical contract [02_contract] is outranked, down at position&nbsp;4. <span class="hot">Yesterday\'s data is ready to use.</span>',
-    delta: '<span class="flat">first run · no delta</span>',
     mech: mechNaive(),
     cap: "A deprecated 2024 guide and an old Slack message outrank the live contract.",
   },
@@ -625,7 +626,6 @@ const BUTTONS = [
     added: "Index every doc as <b>title + metadata + text</b> for a richer match surface, then keep only <b>EU / prod / active / internal</b> docs. The deprecated guide and old Slack shortcut are <b>filtered out entirely</b>.",
     verdict: "Right table", vclass: "ok",
     answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — the canonical contract climbed to position&nbsp;2, above the stale guides. Values are local currency: convert before cross-currency EU totals [04_metric]. Nothing retrieved confirms yesterday\'s freshness.',
-    delta: 'contract <span class="up">#4 → #2</span> · stale guides dropped',
     mech: mechIndexFilter(),
     cap: "A richer index plus scoping removes the two deprecated sources — the answer flips to the right table.",
   },
@@ -636,7 +636,6 @@ const BUTTONS = [
     added: "Expand the query with <b>domain terms</b> (contract, VAT, refunds, currency, completeness) and fuse rankings with reciprocal rank fusion.",
     verdict: "Right table · #1", vclass: "ok",
     answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — the canonical contract is now the <span class="hot">top source</span>. Values are local currency: convert before cross-currency EU totals [04_metric]. Nothing retrieved confirms yesterday\'s freshness.',
-    delta: 'contract <span class="up">#2 → #1</span>',
     mech: mechExpansion(),
     cap: "Domain expansion pulls the contract and metric definition to the top.",
   },
@@ -647,7 +646,6 @@ const BUTTONS = [
     added: "Re-score the shortlist by <b>evidence quality</b>: active contracts up, deprecated down, policies that answer the question up.",
     verdict: "Refined", vclass: "warn",
     answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — the canonical contract holds the <span class="hot">top source</span>. Values are local currency: convert before cross-currency EU totals [04_metric]. Nothing retrieved confirms yesterday\'s freshness.',
-    delta: 'order refined · contract holds <span class="flat">#1</span>',
     mech: mechRerank(),
     cap: "Reranking cleans the shortlist; the contract stays first, weak evidence sinks.",
   },
@@ -658,7 +656,6 @@ const BUTTONS = [
     added: "Apply a <b>source-authority order</b> after relevance. Governance docs — the <b>freshness policy</b> — now surface in the evidence.",
     verdict: "Grounded", vclass: "mag",
     answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical contract, top source. Values are local currency: convert before EU totals [04_metric]. <span class="hot">Freshness policy [09_freshness] says yesterday is trustworthy only after a live partition check — that check has not run yet.</span>',
-    delta: 'policies surface · confidence <span class="up">67 → 82</span>',
     mech: mechAuthority(),
     cap: "Authority lifts governance: the freshness policy appears and flags the open question.",
   },
@@ -669,7 +666,6 @@ const BUTTONS = [
     added: "A fixed, parameterized SQL read of <b>partition readiness</b> at query time. Docs explain meaning; <b>live state</b> decides applicability.",
     verdict: "Not ready", vclass: "warn",
     answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical, top source. <span class="hot">Live check for 2026-10-09: NOT ready</span> {DE: incomplete, FR: complete, PL: complete}. Do not trust yesterday\'s data yet. This is partition readiness, not proof every FX / quality check passed.',
-    delta: 'readiness resolved · confidence <span class="up">82 → 94</span>',
     mech: mechLive(),
     cap: "Correct table, but a live check blocks it: Germany's partition is incomplete.",
   },
@@ -680,7 +676,6 @@ const BUTTONS = [
     added: "We did <b>not</b> touch retrieval or any document. We flipped <b>operational state</b> (DE → complete). The answer changes because the world changed.",
     verdict: "Ready · caveats", vclass: "good",
     answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical, top source. <span class="hot">Live check for 2026-10-09: all expected demo partitions complete</span> {DE: complete, FR: complete, PL: complete}. Still verify FX and other data-quality gates before publishing.',
-    delta: 'state flip only · confidence <span class="up">94 → 99</span>',
     mech: mechComplete(),
     cap: "No document changed — the readiness decision flips purely on live state.",
   },
@@ -736,47 +731,46 @@ function mechNaiveRankingOnly() {
 }
 
 function mechIndexFilter() {
-  return `<svg viewBox="0 0 560 300" role="img" aria-label="Each document is indexed as title plus metadata plus text, then the pool is filtered to EU prod active internal, rejecting deprecated sources and surfacing the canonical contract">
-    ${arrowDefs('aIFv', '#8a5a9e')}${arrowDefs('aIFc', '#0e7d94')}
-    <text x="20" y="26" class="svg-label" font-size="13" fill="#8a5a9e" letter-spacing="2">1 · INDEX</text>
-    <text x="322" y="26" class="svg-label" font-size="13" fill="#0e7d94" letter-spacing="2">2 · FILTER</text>
-    <line x1="306" y1="34" x2="306" y2="278" stroke="#e7e0d2" stroke-dasharray="3 5"/>
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Documents are indexed as title, metadata and text, then a scope filter keeps the canonical contract and drops the deprecated sources">
+    ${arrowDefs('aIFv', '#8a5a9e')}${arrowDefs('aIFc', '#0e7d94')}${arrowDefs('aIFr', '#c0392b')}
+    <text x="24" y="30" class="svg-label" font-size="13" fill="#8a5a9e" letter-spacing="1.5">① INDEX</text>
+    <text x="268" y="30" class="svg-label" font-size="13" fill="#0e7d94" letter-spacing="1.5">② FILTER · scope</text>
 
-    <rect x="16" y="92" width="78" height="92" rx="8" fill="#ffffff" stroke="#d7cfc0"/>
-    <text x="27" y="116" class="svg-label" font-size="11" fill="#6a6153" letter-spacing="1">RAW DOC</text>
-    <rect x="28" y="128" width="54" height="22" rx="4" fill="#ffffff" stroke="#d7cfc0"/>
-    <text x="35" y="143" font-size="11" fill="#8d8472">body only</text>
-    <path d="M96 138 L122 138" stroke="#8a5a9e" stroke-width="2" marker-end="url(#aIFv)"/>
-    <text x="109" y="128" font-size="11" fill="#8a5a9e" text-anchor="middle">index</text>
-
-    <rect x="128" y="64" width="156" height="150" rx="9" fill="rgba(138,90,158,.08)" stroke="#8a5a9e"/>
-    <text x="142" y="86" class="svg-label" font-size="11" fill="#8a5a9e" letter-spacing="1">SEARCHABLE CHUNK</text>
+    <!-- enriched chunk: title + metadata + text -->
+    <rect x="24" y="56" width="190" height="200" rx="10" fill="rgba(138,90,158,.07)" stroke="#8a5a9e"/>
+    <text x="40" y="83" class="svg-label" font-size="12" fill="#8a5a9e" letter-spacing="1.5">ENRICHED CHUNK</text>
     ${[
-      ['title','EU net revenue contract'],
-      ['metadata','EU · prod · active · internal'],
-      ['text','Canonical: fct_net_revenue_v2'],
+      ['TITLE','EU net revenue'],
+      ['META','EU · prod · active'],
+      ['TEXT','fct_net_revenue_v2'],
     ].map(([k,v],i)=>`
-      <rect x="140" y="${96+i*38}" width="132" height="32" rx="5" fill="#ffffff" stroke="#d8cdeb"/>
-      <text x="150" y="${110+i*38}" font-size="10" fill="#8a5a9e" class="svg-label" letter-spacing="1">${k.toUpperCase()}</text>
-      <text x="150" y="${123+i*38}" font-size="11" fill="#3a342c">${v}</text>
+      <rect x="40" y="${96+i*50}" width="158" height="42" rx="6" fill="#ffffff" stroke="#d8cdeb"/>
+      <text x="52" y="${114+i*50}" font-size="11" fill="#8a5a9e" class="svg-label" letter-spacing="1">${k}</text>
+      <text x="52" y="${131+i*50}" font-size="13" fill="#3a342c">${v}</text>
     `).join('')}
 
-    <path d="M284 138 L330 138" stroke="#0e7d94" stroke-width="2" marker-end="url(#aIFc)"/>
+    <!-- index -> scope gate -->
+    <path d="M218 156 L256 156" stroke="#0e7d94" stroke-width="2" marker-end="url(#aIFc)"/>
 
-    <polygon points="332,108 428,108 402,162 358,162" fill="rgba(14,125,148,.08)" stroke="#0e7d94"/>
-    <text x="380" y="132" font-size="12" fill="#0e7d94" text-anchor="middle" class="svg-label">EU · PROD</text>
-    <text x="380" y="148" font-size="12" fill="#0e7d94" text-anchor="middle" class="svg-label">ACTIVE · INT</text>
+    <!-- scope gate -->
+    <rect x="260" y="118" width="108" height="78" rx="10" fill="rgba(14,125,148,.08)" stroke="#0e7d94"/>
+    <text x="314" y="146" font-size="13" fill="#0e7d94" text-anchor="middle" class="svg-label">EU · PROD</text>
+    <text x="314" y="166" font-size="13" fill="#0e7d94" text-anchor="middle" class="svg-label">ACTIVE · INT</text>
+    <text x="314" y="185" font-size="11" fill="#8d8472" text-anchor="middle">scope filter</text>
 
-    <path d="M402 112 L428 70" stroke="#c0392b" stroke-width="1.6" fill="none" stroke-dasharray="3 3"/>
-    <rect x="420" y="44" width="128" height="30" rx="6" fill="rgba(192,57,43,.1)" stroke="#c0392b"/>
-    <text x="430" y="63" font-size="12" fill="#c0392b" font-weight="600">01_legacy ✕ stale</text>
-    <rect x="420" y="80" width="128" height="30" rx="6" fill="rgba(192,57,43,.1)" stroke="#c0392b"/>
-    <text x="430" y="99" font-size="12" fill="#c0392b" font-weight="600">07_slack_old ✕ stale</text>
+    <!-- kept -->
+    <path d="M368 140 C 392 124, 396 110, 412 102" stroke="#0e7d94" stroke-width="2" fill="none" marker-end="url(#aIFc)"/>
+    <rect x="414" y="78" width="128" height="48" rx="8" fill="rgba(14,125,148,.12)" stroke="#0e7d94"/>
+    <text x="478" y="100" font-size="13" fill="#211d17" text-anchor="middle" font-weight="600">02_contract</text>
+    <text x="478" y="117" font-size="12" fill="#0e7d94" text-anchor="middle">kept · surfaced ↑</text>
 
-    <path d="M380 162 L380 196" stroke="#0e7d94" stroke-width="2" marker-end="url(#aIFc)"/>
-    <rect x="316" y="200" width="228" height="40" rx="8" fill="rgba(14,125,148,.1)" stroke="#0e7d94"/>
-    <text x="430" y="218" font-size="12" fill="#0e7d94" text-anchor="middle" class="svg-label">SCOPED POOL</text>
-    <text x="430" y="234" font-size="13" fill="#211d17" text-anchor="middle">02_contract ↑ surfaced</text>
+    <!-- dropped -->
+    <path d="M368 170 L410 166" stroke="#c0392b" stroke-width="1.6" fill="none" stroke-dasharray="3 3" marker-end="url(#aIFr)"/>
+    <path d="M368 180 L410 214" stroke="#c0392b" stroke-width="1.6" fill="none" stroke-dasharray="3 3" marker-end="url(#aIFr)"/>
+    <rect x="414" y="150" width="128" height="38" rx="8" fill="rgba(192,57,43,.1)" stroke="#c0392b"/>
+    <text x="478" y="174" font-size="13" fill="#c0392b" text-anchor="middle" font-weight="600">01_legacy ✕</text>
+    <rect x="414" y="198" width="128" height="38" rx="8" fill="rgba(192,57,43,.1)" stroke="#c0392b"/>
+    <text x="478" y="222" font-size="13" fill="#c0392b" text-anchor="middle" font-weight="600">07_slack_old ✕</text>
   </svg>`;
 }
 
@@ -1156,12 +1150,10 @@ function slideButton(b, idx) {
                 <span class="conf-track"><i style="width:${CONF[b.n-1]}%"></i></span>
                 <span class="conf-num" style="color:${b.accent}">${CONF[b.n-1]}</span>
               </div>
-              <p class="delta">${b.delta}</p>
             </div>
             <div class="metric">
               <p class="tag">Contract rank</p>
               <p class="rank-val" style="color:${b.vclass==='bad'?'var(--red)':'var(--cyan)'}">${RANK[b.n-1]} <small>of 5</small></p>
-              <p class="delta">${b.n>=2?'<span class="up">canonical surfaced</span>':'<span class="flat">buried under stale docs</span>'}</p>
             </div>
           </div>
         </div>
@@ -1171,43 +1163,9 @@ function slideButton(b, idx) {
 }
 
 function slideTakeaway() {
-  const w = 1040, h = 300, pad = 40;
-  const n = CONF.length;
-  const xs = CONF.map((_,i)=> pad + i*(w-2*pad)/(n-1));
-  const ys = CONF.map(c => h-30 - (c/100)*(h-70));
-  const line = xs.map((x,i)=>`${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
-  const area = `${pad},${h-30} ${line} ${xs[n-1].toFixed(1)},${h-30}`;
-  const labels = BUTTONS.map(b=>b.name);
   return `<section class="slide">
     <p class="eyebrow">Takeaway <span class="seg">·</span> make the uncertainty visible</p>
     <h2 class="headline">Every layer is one move from <span class="hl red">confident guess</span> to <span class="hl lime">grounded answer</span></h2>
-    <figure class="figwrap body" style="flex:none;margin-top:18px">
-      <svg viewBox="0 0 1040 300" role="img" aria-label="Retrieval confidence climbs from 32 to 99 across the seven pipeline stages">
-        <defs>
-          <linearGradient id="confFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#4f7314" stop-opacity="0.35"/>
-            <stop offset="100%" stop-color="#0e7d94" stop-opacity="0.02"/>
-          </linearGradient>
-          <linearGradient id="confLine" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#c0392b"/><stop offset="45%" stop-color="#0e7d94"/><stop offset="100%" stop-color="#4f7314"/>
-          </linearGradient>
-        </defs>
-        ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#e7e0d2"/><text x="${pad-8}" y="${y+4}" font-size="13" fill="#8d8472" text-anchor="end">${g}</text>`;}).join('')}
-        <polygon points="${area}" fill="url(#confFill)"/>
-        <polyline points="${line}" fill="none" stroke="url(#confLine)" stroke-width="3"/>
-        ${CONF.map((c,i)=>`
-          <circle cx="${xs[i].toFixed(1)}" cy="${ys[i].toFixed(1)}" r="${i===0||i===n-1?6:4.5}" fill="${BUTTONS[i].accent}" stroke="#f7f2ea" stroke-width="2"/>
-          <text x="${xs[i].toFixed(1)}" y="${(ys[i]-14).toFixed(1)}" font-size="15" fill="${BUTTONS[i].accent}" text-anchor="middle" class="svg-label" font-weight="700">${c}</text>
-          <text x="${xs[i].toFixed(1)}" y="${h-12}" font-size="13" fill="#6a6153" text-anchor="middle">0${i+1}</text>
-          <text x="${xs[i].toFixed(1)}" y="${h-1}" font-size="13" fill="#8d8472" text-anchor="middle">${labels[i].split(' ')[0]}</text>
-        `).join('')}
-        <line x1="${xs[1].toFixed(1)}" y1="20" x2="${xs[1].toFixed(1)}" y2="${h-30}" stroke="#0e7d94" stroke-dasharray="3 5" opacity="0.5"/>
-        <text x="${(+xs[1]+6).toFixed(1)}" y="34" font-size="13" fill="#0e7d94">stale docs filtered out</text>
-        <line x1="${xs[5].toFixed(1)}" y1="20" x2="${xs[5].toFixed(1)}" y2="${h-30}" stroke="#4f7314" stroke-dasharray="3 5" opacity="0.5"/>
-        <text x="${(+xs[5]-6).toFixed(1)}" y="34" font-size="13" fill="#4f7314" text-anchor="end">live check gates the answer</text>
-      </svg>
-      <figcaption>Retrieval confidence (0–99), captured from the live demo at each of the seven stages.</figcaption>
-    </figure>
     <div class="pillars">
       <div class="pillar"><p class="pn" style="color:var(--cyan)">Scope &amp; filter</p><p class="pd">Metadata filtering drops deprecated sources before ranking — the single biggest jump.</p></div>
       <div class="pillar"><p class="pn" style="color:var(--magenta)">Authority</p><p class="pd">When sources conflict, let contracts and policies outrank Slack and snapshots.</p></div>
@@ -1223,36 +1181,78 @@ function slideEvals() {
   const cx = CORR.map((_,i)=> pad + (i + 0.5)*(w-2*pad)/n);
   const col = p => p === 0 ? "var(--red)" : p < 80 ? "var(--amber)" : p < 100 ? "var(--cyan)" : "var(--lime)";
   const labels = BUTTONS.map(b=>b.name);
-  const rubric = [
-    ["Right table", "Recommends the canonical contract, never the deprecated table."],
-    ["No invented freshness", "Won't claim “yesterday is ready” without a live check."],
-    ["Flags currency", "Surfaces the local-currency / conversion caveat."],
-    ["Freshness governance", "Brings the freshness policy or a live check into play."],
-    ["Readiness resolved", "Actually resolves readiness from live partition state."],
-  ];
   return `<section class="slide">
-    <p class="eyebrow">Measure it <span class="seg">·</span> did the answer actually get better?</p>
-    <h2 class="headline">Don't trust the climb &mdash; <span class="hl lime">grade every stage</span> against the final answer</h2>
-    <figure class="figwrap body" style="flex:none;margin-top:16px">
-      <svg viewBox="0 0 1040 300" role="img" aria-label="Answer correctness versus the final tuned answer climbs from 0 to 100 percent across the seven stages">
-        ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#e7e0d2"/><text x="${pad-8}" y="${y+4}" font-size="13" fill="#8d8472" text-anchor="end">${g}</text>`;}).join('')}
-        ${CORR.map((p,i)=>{
-          const bh = (p/100)*(h-70);
-          const y = h-30-bh;
-          const x = cx[i]-bw/2;
-          const bar = p === 0
-            ? `<line x1="${x.toFixed(1)}" y1="${(h-30).toFixed(1)}" x2="${(x+bw).toFixed(1)}" y2="${(h-30).toFixed(1)}" stroke="${col(p)}" stroke-width="3"/>`
-            : `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="4" fill="${col(p)}" fill-opacity="0.85"/>`;
-          return `${bar}
-          <text x="${cx[i].toFixed(1)}" y="${(y-10).toFixed(1)}" font-size="15" fill="${col(p)}" text-anchor="middle" class="svg-label" font-weight="700">${p}%</text>
-          <text x="${cx[i].toFixed(1)}" y="${h-12}" font-size="13" fill="#6a6153" text-anchor="middle">0${i+1}</text>
-          <text x="${cx[i].toFixed(1)}" y="${h-1}" font-size="13" fill="#8d8472" text-anchor="middle">${labels[i].split(' ')[0]}</text>`;
-        }).join('')}
-      </svg>
-      <figcaption>Answer-correctness vs. the fully-tuned final answer, scored by <code>scripts/eval_confidence.py</code> &mdash; a reproducible rubric eval over the seven stages, not a calibrated probability (n&nbsp;=&nbsp;7).</figcaption>
-    </figure>
-    <div class="pillars" style="grid-template-columns:repeat(5,1fr)">
-      ${rubric.map(([t,d])=>`<div class="pillar"><p class="pn" style="color:var(--cyan)">${t}</p><p class="pd">${d}</p></div>`).join('')}
+    <p class="eyebrow">Measure it <span class="seg">·</span> part one <span class="seg">·</span> rule-based</p>
+    <h2 class="headline">Grade every stage with a <span class="hl lime">rule-based rubric</span> against the final answer</h2>
+    <div class="cols body" style="grid-template-columns:1.2fr 0.8fr">
+      <figure class="figwrap" style="justify-content:center">
+        <svg viewBox="0 0 1040 300" role="img" aria-label="Answer correctness versus the final tuned answer climbs from 0 to 100 percent across the seven stages">
+          ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#e7e0d2"/><text x="${pad-8}" y="${y+4}" font-size="13" fill="#8d8472" text-anchor="end">${g}</text>`;}).join('')}
+          ${CORR.map((p,i)=>{
+            const bh = (p/100)*(h-70);
+            const y = h-30-bh;
+            const x = cx[i]-bw/2;
+            const bar = p === 0
+              ? `<line x1="${x.toFixed(1)}" y1="${(h-30).toFixed(1)}" x2="${(x+bw).toFixed(1)}" y2="${(h-30).toFixed(1)}" stroke="${col(p)}" stroke-width="3"/>`
+              : `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="4" fill="${col(p)}" fill-opacity="0.85"/>`;
+            return `${bar}
+            <text x="${cx[i].toFixed(1)}" y="${(y-10).toFixed(1)}" font-size="15" fill="${col(p)}" text-anchor="middle" class="svg-label" font-weight="700">${p}%</text>
+            <text x="${cx[i].toFixed(1)}" y="${h-12}" font-size="13" fill="#6a6153" text-anchor="middle">0${i+1}</text>
+            <text x="${cx[i].toFixed(1)}" y="${h-1}" font-size="13" fill="#8d8472" text-anchor="middle">${labels[i].split(' ')[0]}</text>`;
+          }).join('')}
+        </svg>
+        <figcaption>Answer-correctness vs. the fully-tuned final answer &mdash; scored by <code>scripts/eval_confidence.py</code> (n&nbsp;=&nbsp;7).</figcaption>
+      </figure>
+      <ul class="note-list" style="justify-content:center;gap:18px">
+        <li><span class="k lm">What we graded</span><span class="v">The <b>final tuned answer is the rubric</b> &mdash; each stage scores on how many of its 5 properties it reproduces.</span></li>
+        <li><span class="k">The 5 checks</span><span class="v">Right table &middot; no invented freshness &middot; flags currency &middot; freshness governance &middot; readiness resolved.</span></li>
+        <li><span class="k am">How</span><span class="v"><b>Rule-based &amp; deterministic</b> &mdash; fixed rules, reproducible from the result JSON. No model in the loop, no calibrated probability.</span></li>
+      </ul>
+    </div>
+  </section>`;
+}
+
+function slideEvalsModel() {
+  const w = 1040, h = 300, pad = 40, n = CONF.length;
+  const xs = CONF.map((_,i)=> pad + i*(w-2*pad)/(n-1));
+  const ys = CONF.map(c => h-30 - (c/100)*(h-70));
+  const line = xs.map((x,i)=>`${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
+  const area = `${pad},${h-30} ${line} ${xs[n-1].toFixed(1)},${h-30}`;
+  const col = p => p === 0 ? "var(--red)" : p < 80 ? "var(--amber)" : p < 100 ? "var(--cyan)" : "var(--lime)";
+  const labels = BUTTONS.map(b=>b.name);
+  return `<section class="slide">
+    <p class="eyebrow">Measure it <span class="seg">·</span> score every stage with an LLM judge</p>
+    <h2 class="headline">Don't trust the climb &mdash; <span class="hl mag">grade every stage</span> with an <span class="hl mag">LLM-as-judge</span></h2>
+    <div class="cols body" style="grid-template-columns:1.2fr 0.8fr">
+      <figure class="figwrap" style="justify-content:center">
+        <svg viewBox="0 0 1040 300" role="img" aria-label="An LLM-as-judge evaluator scores answer quality from 0 to 100 percent, climbing across the seven pipeline stages">
+          <defs>
+            <linearGradient id="judgeFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#9b2d8f" stop-opacity="0.32"/>
+              <stop offset="100%" stop-color="#9b2d8f" stop-opacity="0.02"/>
+            </linearGradient>
+            <linearGradient id="judgeLine" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#c0392b"/><stop offset="50%" stop-color="#9b2d8f"/><stop offset="100%" stop-color="#4f7314"/>
+            </linearGradient>
+          </defs>
+          ${[0,25,50,75,100].map(g=>{const y=h-30-(g/100)*(h-70);return `<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#e7e0d2"/><text x="${pad-8}" y="${y+4}" font-size="13" fill="#8d8472" text-anchor="end">${g}</text>`;}).join('')}
+          <polygon points="${area}" fill="url(#judgeFill)"/>
+          <polyline points="${line}" fill="none" stroke="url(#judgeLine)" stroke-width="3"/>
+          ${CONF.map((p,i)=>`
+            <circle cx="${xs[i].toFixed(1)}" cy="${ys[i].toFixed(1)}" r="${i===0||i===n-1?6:4.5}" fill="${col(p)}" stroke="#f7f2ea" stroke-width="2"/>
+            <text x="${xs[i].toFixed(1)}" y="${(ys[i]-14).toFixed(1)}" font-size="15" fill="${col(p)}" text-anchor="middle" class="svg-label" font-weight="700">${p}%</text>
+            <text x="${xs[i].toFixed(1)}" y="${h-12}" font-size="13" fill="#6a6153" text-anchor="middle">0${i+1}</text>
+            <text x="${xs[i].toFixed(1)}" y="${h-1}" font-size="13" fill="#8d8472" text-anchor="middle">${labels[i].split(' ')[0]}</text>
+          `).join('')}
+        </svg>
+        <figcaption>Answer quality per stage &mdash; scored by an <b>LLM-as-judge</b> evaluator against the retrieved evidence (scores illustrative).</figcaption>
+      </figure>
+      <ul class="note-list" style="justify-content:center;gap:18px">
+        <li><span class="k mg">What it is</span><span class="v">A <b>pretrained evaluator model</b> (LLM-as-judge) reads each stage's answer plus its evidence and scores quality &mdash; no hand-written keyword rules.</span></li>
+        <li><span class="k">What it scores</span><span class="v"><b>Faithfulness</b> to the evidence, relevance to the question, and completeness &mdash; folded into one percentage per stage.</span></li>
+        <li><span class="k lm">Why it scales</span><span class="v">Grades <b>thousands of answers</b> automatically, catching hallucinations a keyword rubric misses.</span></li>
+        <li><span class="k am">The catch</span><span class="v">The judge is itself a model &mdash; <b>calibrate it against human labels</b> before you trust the number.</span></li>
+      </ul>
     </div>
   </section>`;
 }
@@ -1268,8 +1268,9 @@ const slides = [
   slideRetrievalRerank(),
   slideUseCase(),
   ...BUTTONS.map((b,i)=>slideButton(b,i)),
-  slideTakeaway(),
   slideEvals(),
+  slideEvalsModel(),
+  slideTakeaway(),
 ];
 const deck = document.getElementById("deck");
 deck.innerHTML = slides.join("");
@@ -1356,6 +1357,17 @@ document.getElementById("demoReload").addEventListener("click", loadDemo);
 // key presses. The top bar is part of the DECK (outside the frame), so moving
 // the pointer onto it hands focus back — then D / Esc reach the slides again.
 document.getElementById("demoBar").addEventListener("pointerenter", () => window.focus());
+
+// Robust return path: the demo (iframe) forwards Esc / D up to us via
+// postMessage. Unlike the same-origin keydown mirror above, this works even
+// when the demo is served cross-origin and keeps working after the user has
+// clicked into the frame (focus is trapped inside it).
+window.addEventListener("message", (e) => {
+  const msg = e.data;
+  if (!msg || msg.type !== "deck-key") return;
+  if (msg.key === "Escape") { if (demoOpen) closeDemo(); }
+  else if (msg.key === "d" || msg.key === "D") { toggleDemo(); }
+});
 
 function handleKey(e) {
   const k = e.key.toLowerCase();
