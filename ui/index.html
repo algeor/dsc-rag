@@ -31,38 +31,33 @@
             <strong>Naive search</strong>
             <small>raw BM25; stale source wins</small>
           </button>
-          <button class="step" data-step="indexing">
+          <button class="step" data-step="index_filter">
             <span>2</span>
-            <strong>Indexing</strong>
-            <small>title + metadata + text</small>
-          </button>
-          <button class="step" data-step="metadata">
-            <span>3</span>
-            <strong>Metadata filter</strong>
-            <small>EU / prod / active / internal</small>
+            <strong>Index + filter</strong>
+            <small>index title+meta+text, scope to EU/prod/active/internal</small>
           </button>
           <button class="step" data-step="rewrite">
-            <span>4</span>
+            <span>3</span>
             <strong>Query expansion</strong>
             <small>contract, VAT, refunds, FX</small>
           </button>
           <button class="step" data-step="rerank">
-            <span>5</span>
+            <span>4</span>
             <strong>Reranking</strong>
             <small>better evidence moves up</small>
           </button>
           <button class="step" data-step="authority">
-            <span>6</span>
+            <span>5</span>
             <strong>Authority policy</strong>
             <small>contracts beat Slack</small>
           </button>
           <button class="step danger" data-step="live">
-            <span>7</span>
+            <span>6</span>
             <strong>Add live check</strong>
             <small>same RAG, current readiness</small>
           </button>
           <button class="step success" data-step="complete">
-            <span>8</span>
+            <span>7</span>
             <strong>Data lands</strong>
             <small>same pipeline, state flips</small>
           </button>

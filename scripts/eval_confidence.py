@@ -26,23 +26,15 @@ STAGES: list[dict[str, Any]] = [
         "resolved_label": False,
     },
     {
-        "id": "02_indexing",
-        "key": "indexing",
-        "name": "Indexing",
-        "kwargs": {"mode": "context", "disabled": ["metadata", "rewrite", "rerank", "authority"]},
-        "grounded_label": False,
-        "resolved_label": False,
-    },
-    {
-        "id": "03_metadata",
-        "key": "metadata",
-        "name": "Metadata filter",
+        "id": "02_index_filter",
+        "key": "index_filter",
+        "name": "Index + filter",
         "kwargs": {"mode": "context", "disabled": ["rewrite", "rerank", "authority"]},
         "grounded_label": True,
         "resolved_label": False,
     },
     {
-        "id": "04_rewrite",
+        "id": "03_rewrite",
         "key": "rewrite",
         "name": "Query expansion",
         "kwargs": {"mode": "context", "disabled": ["rerank", "authority"]},
@@ -50,7 +42,7 @@ STAGES: list[dict[str, Any]] = [
         "resolved_label": False,
     },
     {
-        "id": "05_rerank",
+        "id": "04_rerank",
         "key": "rerank",
         "name": "Reranking",
         "kwargs": {"mode": "context", "disabled": ["authority"]},
@@ -58,7 +50,7 @@ STAGES: list[dict[str, Any]] = [
         "resolved_label": False,
     },
     {
-        "id": "06_authority",
+        "id": "05_authority",
         "key": "authority",
         "name": "Authority policy",
         "kwargs": {"mode": "context", "disabled": []},
@@ -66,7 +58,7 @@ STAGES: list[dict[str, Any]] = [
         "resolved_label": False,
     },
     {
-        "id": "07_live",
+        "id": "06_live",
         "key": "live",
         "name": "Add live check",
         "kwargs": {"mode": "live", "disabled": []},
@@ -74,7 +66,7 @@ STAGES: list[dict[str, Any]] = [
         "resolved_label": True,
     },
     {
-        "id": "08_complete",
+        "id": "07_complete",
         "key": "complete",
         "name": "Mark complete",
         "kwargs": {"mode": "live", "disabled": []},

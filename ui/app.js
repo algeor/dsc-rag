@@ -8,8 +8,7 @@ const state = {
 
 const steps = {
   naive: { mode: "naive", reset: true, disabled: [] },
-  indexing: { mode: "context", disabled: ["metadata", "rewrite", "rerank", "authority"] },
-  metadata: { mode: "context", disabled: ["rewrite", "rerank", "authority"] },
+  index_filter: { mode: "context", disabled: ["rewrite", "rerank", "authority"] },
   rewrite: { mode: "context", disabled: ["rerank", "authority"] },
   rerank: { mode: "context", disabled: ["authority"] },
   authority: { mode: "context", disabled: [] },

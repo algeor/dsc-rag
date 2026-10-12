@@ -5,10 +5,9 @@ setup(True)
 naive=run(mode='naive')
 assert naive['evidence'][0]['id']=='01_legacy'
 assert 'finance.daily_revenue' in naive['answer']
-index_only=run(mode='context',disabled=['metadata','rewrite','rerank','authority'])
-assert [line.split(':',1)[0] for line in index_only['trace']]==['index','offline retrieval']
-metadata_only=run(mode='context',disabled=['rewrite','rerank','authority'])
-assert all(d['region']=='EU' and d['environment']=='prod' and d['status']=='active' and d['access']=='internal' for d in metadata_only['evidence'])
+index_filter=run(mode='context',disabled=['rewrite','rerank','authority'])
+assert any(line.startswith('index:') for line in index_filter['trace'])
+assert all(d['region']=='EU' and d['environment']=='prod' and d['status']=='active' and d['access']=='internal' for d in index_filter['evidence'])
 rewrite_only=run(mode='context',disabled=['rerank','authority'])
 assert any(line.startswith('rewrite:') for line in rewrite_only['trace'])
 rerank_only=run(mode='context',disabled=['authority'])
@@ -38,7 +37,6 @@ from eval_confidence import answer_correctness
 setup(True)
 stage_runs=[
     run(mode='naive'),
-    run(mode='context',disabled=['metadata','rewrite','rerank','authority']),
     run(mode='context',disabled=['rewrite','rerank','authority']),
     run(mode='context',disabled=['rerank','authority']),
     run(mode='context',disabled=['authority']),
