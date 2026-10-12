@@ -837,29 +837,37 @@ function mechAuthority() {
 }
 
 function mechLive() {
-  return `<svg viewBox="0 0 560 300" role="img" aria-label="Live SQL check on partition readiness">
-    ${arrowDefs('aL', '#4f7314')}
-    ${arrowDefs('aLr', '#c0392b')}
-    <rect x="20" y="70" width="210" height="90" rx="9" fill="#efe9dd" stroke="#4f7314"/>
-    <text x="36" y="94" class="svg-label" font-size="13" fill="#4f7314" letter-spacing="2">PARAMETERIZED SQL</text>
-    <text x="36" y="118" font-size="13" fill="#3a342c">asset = fct_net_revenue_v2</text>
-    <text x="36" y="136" font-size="13" fill="#3a342c">business_date = 2026-10-09</text>
-    <path d="M234 115 L288 115" stroke="#4f7314" stroke-width="2" marker-end="url(#aL)"/>
-    ${[
-      ['DE','incomplete','#c0392b',56],
-      ['FR','complete','#4f7314',110],
-      ['PL','complete','#4f7314',164],
-    ].map(([c,s,col,y])=>`
-      <rect x="296" y="${y}" width="140" height="40" rx="7" fill="${col==='#c0392b'?'rgba(192,57,43,.12)':'rgba(79,115,20,.1)'}" stroke="${col}"/>
-      <text x="312" y="${+y+25}" font-size="15" fill="${col}" font-weight="700">${c}</text>
-      <text x="350" y="${+y+25}" font-size="14" fill="#3a342c">${s}</text>
-    `).join('')}
-    <path d="M440 76 L480 110" stroke="#c0392b" stroke-width="2" marker-end="url(#aLr)"/>
-    <path d="M440 130 L480 118" stroke="#4f7314" stroke-width="1.4"/>
-    <path d="M440 184 L480 126" stroke="#4f7314" stroke-width="1.4"/>
-    <rect x="470" y="96" width="78" height="56" rx="9" fill="rgba(192,57,43,.12)" stroke="#c0392b"/>
-    <text x="509" y="120" font-size="13" fill="#c0392b" text-anchor="middle" class="svg-label">GATE</text>
-    <text x="509" y="138" font-size="13" fill="#c0392b" text-anchor="middle">NOT READY</text>
+  const bx = 268, bw = 152, bh = 48;
+  const parts = [
+    ['DE','incomplete','#c0392b', 54],
+    ['FR','complete',  '#4f7314', 126],
+    ['PL','complete',  '#4f7314', 198],
+  ];
+  // SQL reads each partition — neutral fan to every box
+  const sqlFan = parts.map(([,,,y])=>
+    `<path d="M224 150 L${bx-6} ${y+bh/2}" stroke="#b7ad99" stroke-width="1.6" fill="none" marker-end="url(#aLn)"/>`
+  ).join('');
+  const boxes = parts.map(([c,s,col,y])=>`
+    <rect x="${bx}" y="${y}" width="${bw}" height="${bh}" rx="7" fill="${col==='#c0392b'?'rgba(192,57,43,.12)':'rgba(79,115,20,.1)'}" stroke="${col}"/>
+    <text x="${bx+16}" y="${y+30}" font-size="16" fill="${col}" font-weight="700">${c}</text>
+    <text x="${bx+52}" y="${y+30}" font-size="14" fill="#3a342c">${s}</text>`).join('');
+  // Each partition result feeds the gate — all arrowheaded; DE (incomplete) is the red blocker
+  const gateEndY = { DE: 136, FR: 150, PL: 164 };
+  const toGate = parts.map(([c,,col,y])=>
+    `<path d="M${bx+bw+4} ${y+bh/2} L458 ${gateEndY[c]}" stroke="${col}" stroke-width="2" fill="none" marker-end="url(#${col==='#c0392b'?'aLr':'aLg'})"/>`
+  ).join('');
+  return `<svg viewBox="0 0 560 300" role="img" aria-label="Live SQL check reads partition readiness per country; Germany is incomplete so the gate returns not ready">
+    ${arrowDefs('aLr', '#c0392b')}${arrowDefs('aLg', '#4f7314')}${arrowDefs('aLn', '#b7ad99')}
+    <rect x="20" y="108" width="200" height="84" rx="9" fill="#efe9dd" stroke="#4f7314"/>
+    <text x="36" y="132" class="svg-label" font-size="13" fill="#4f7314" letter-spacing="2">PARAMETERIZED SQL</text>
+    <text x="36" y="156" font-size="13" fill="#3a342c">asset = fct_net_revenue_v2</text>
+    <text x="36" y="176" font-size="13" fill="#3a342c">business_date = 2026-10-09</text>
+    ${sqlFan}
+    ${boxes}
+    ${toGate}
+    <rect x="464" y="118" width="82" height="64" rx="9" fill="rgba(192,57,43,.12)" stroke="#c0392b"/>
+    <text x="505" y="146" font-size="13" fill="#c0392b" text-anchor="middle" class="svg-label">GATE</text>
+    <text x="505" y="165" font-size="13" fill="#c0392b" text-anchor="middle">NOT READY</text>
   </svg>`;
 }
 
