@@ -123,7 +123,7 @@ function requestForSelected(extra = {}) {
     ...steps[state.selected],
     ...extra,
     question: el.question.value.trim(),
-    date: el.date.value.trim() || "2026-10-09",
+    date: el.date.value.trim() || "2026-10-12",
     backend: "offline",
     use_llm: state.llmOn,
   };
@@ -591,7 +591,7 @@ async function resetDemoState() {
     mode: "live",
     disabled: [],
     question: el.question.value.trim(),
-    date: el.date.value.trim() || "2026-10-09",
+    date: el.date.value.trim() || "2026-10-12",
     backend: "offline",
     reset: true,
     set_de: "incomplete",

@@ -82,7 +82,7 @@
     "region": "EU",
     "status": "active",
     "kind": "incident",
-    "updated_at": "2026-10-09",
+    "updated_at": "2026-10-12",
     "environment": "prod",
     "access": "internal",
     "path": "documents/08_incident.md"
@@ -159,7 +159,7 @@
     "region": "EU",
     "status": "active",
     "kind": "slack",
-    "updated_at": "2026-10-09",
+    "updated_at": "2026-10-12",
     "environment": "prod",
     "access": "internal",
     "path": "documents/15_slack_new.md"
@@ -170,7 +170,7 @@
     "region": "EU",
     "status": "active",
     "kind": "snapshot",
-    "updated_at": "2026-10-08",
+    "updated_at": "2026-10-11",
     "environment": "prod",
     "access": "internal",
     "path": "documents/16_snapshot.md"

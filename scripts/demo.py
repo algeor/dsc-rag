@@ -16,7 +16,7 @@ def setup(reset=False):
         c.execute('CREATE TABLE IF NOT EXISTS partitions (asset TEXT, business_date TEXT, country TEXT, status TEXT, PRIMARY KEY(asset,business_date,country))')
         if reset or not c.execute('SELECT count(*) FROM partitions').fetchone()[0]:
             c.execute('DELETE FROM partitions')
-            c.executemany('INSERT INTO partitions VALUES (?,?,?,?)', [('finance.fct_net_revenue_v2','2026-10-09',x,s) for x,s in [('DE','incomplete'),('FR','complete'),('PL','complete')]])
+            c.executemany('INSERT INTO partitions VALUES (?,?,?,?)', [('finance.fct_net_revenue_v2','2026-10-12',x,s) for x,s in [('DE','incomplete'),('FR','complete'),('PL','complete')]])
     return db
 
 def live(date):
@@ -201,7 +201,7 @@ def llm(q,docs,status):
     req=urllib.request.Request('https://api.openai.com/v1/chat/completions',data=json.dumps(payload).encode(),headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'})
     with urllib.request.urlopen(req,timeout=45) as r: return json.load(r)['choices'][0]['message']['content'].strip()
 
-def run(q=QUESTION,mode='live',backend='offline',disabled=(),date='2026-10-09',use_llm=False):
+def run(q=QUESTION,mode='live',backend='offline',disabled=(),date='2026-10-12',use_llm=False):
     docs,trace=retrieve(q,mode,backend,disabled)
     status=live(date) if mode=='live' and 'live' not in disabled else None
     conf=confidence(docs,status,q)
@@ -214,7 +214,7 @@ def run(q=QUESTION,mode='live',backend='offline',disabled=(),date='2026-10-09',u
 if __name__=='__main__':
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--mode',choices=['naive','context','live'],default='live');ap.add_argument('--backend',choices=['offline','neural'],default='offline')
-    ap.add_argument('--question',default=QUESTION);ap.add_argument('--date',default='2026-10-09');ap.add_argument('--llm',action='store_true')
+    ap.add_argument('--question',default=QUESTION);ap.add_argument('--date',default='2026-10-12');ap.add_argument('--llm',action='store_true')
     ap.add_argument('--disable',action='append',choices=['metadata','rewrite','hybrid','rerank','authority','context','live'],default=[])
     ap.add_argument('--reset',action='store_true');ap.add_argument('--set-de',choices=['complete','incomplete']);ap.add_argument('--output')
     a=ap.parse_args();setup(a.reset)

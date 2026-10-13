@@ -62,7 +62,7 @@
       "region": "EU",
       "status": "active",
       "kind": "incident",
-      "updated_at": "2026-10-09",
+      "updated_at": "2026-10-12",
       "environment": "prod",
       "access": "internal",
       "path": "documents/08_incident.md",

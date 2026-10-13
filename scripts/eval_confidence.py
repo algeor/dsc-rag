@@ -173,7 +173,7 @@ def run_eval() -> dict[str, Any]:
             with sqlite3.connect(setup()) as conn:
                 conn.execute(
                     "UPDATE partitions SET status=? WHERE country=? AND business_date=?",
-                    (stage["set_de"], "DE", "2026-10-09"),
+                    (stage["set_de"], "DE", "2026-10-12"),
                 )
         result = run(**stage["kwargs"])
         checks = answer_checks(result)

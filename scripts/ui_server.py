@@ -97,7 +97,7 @@ class DemoHandler(BaseHTTPRequestHandler):
                 200,
                 {
                     "question": QUESTION,
-                    "date": "2026-10-09",
+                    "date": "2026-10-12",
                     # The UI shows the LLM toggle only when the server allows it.
                     "llm_enabled": LLM_ENABLED,
                 },
@@ -137,7 +137,7 @@ class DemoHandler(BaseHTTPRequestHandler):
             mode = payload.get("mode", "live")
             backend = payload.get("backend", "offline")
             disabled = payload.get("disabled", [])
-            date = payload.get("date", "2026-10-09")
+            date = payload.get("date", "2026-10-12")
             question = payload.get("question") or QUESTION
             set_de = payload.get("set_de")
             reset = bool(payload.get("reset", False))

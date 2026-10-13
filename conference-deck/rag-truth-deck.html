@@ -711,7 +711,7 @@ const BUTTONS = [
     addedTag: "+ Live partition check",
     added: "A fixed, parameterized SQL read of <b>partition readiness</b> at query time. Docs explain meaning; <b>live state</b> decides applicability.",
     verdict: "Not ready", vclass: "warn",
-    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical, top source. <span class="hot">Live check for 2026-10-09: NOT ready</span> {DE: incomplete, FR: complete, PL: complete}. Do not trust yesterday\'s data yet. This is partition readiness, not proof every FX / quality check passed.',
+    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical, top source. <span class="hot">Live check for 2026-10-12: NOT ready</span> {DE: incomplete, FR: complete, PL: complete}. Do not trust yesterday\'s data yet. This is partition readiness, not proof every FX / quality check passed.',
     mech: mechLive(),
     cap: "Correct table, but a live check blocks it: Germany's partition is incomplete.",
   },
@@ -721,7 +721,7 @@ const BUTTONS = [
     addedTag: "No pipeline change — state flips",
     added: "We did <b>not</b> touch retrieval or any document. We flipped <b>operational state</b> (DE → complete). The answer changes because the world changed.",
     verdict: "Ready · caveats", vclass: "good",
-    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical, top source. <span class="hot">Live check for 2026-10-09: all expected demo partitions complete</span> {DE: complete, FR: complete, PL: complete}. Still verify FX and other data-quality gates before publishing.',
+    answer: 'Use <span class="tbl">finance.fct_net_revenue_v2</span> [02_contract] — canonical, top source. <span class="hot">Live check for 2026-10-12: all expected demo partitions complete</span> {DE: complete, FR: complete, PL: complete}. Still verify FX and other data-quality gates before publishing.',
     mech: mechComplete(),
     cap: "No document changed — the readiness decision flips purely on live state.",
   },
@@ -907,7 +907,7 @@ function mechLive() {
     <rect x="20" y="108" width="200" height="84" rx="9" fill="#efe9dd" stroke="#4f7314"/>
     <text x="36" y="132" class="svg-label" font-size="13" fill="#4f7314" letter-spacing="2">PARAMETERIZED SQL</text>
     <text x="36" y="156" font-size="13" fill="#3a342c">asset = fct_net_revenue_v2</text>
-    <text x="36" y="176" font-size="13" fill="#3a342c">business_date = 2026-10-09</text>
+    <text x="36" y="176" font-size="13" fill="#3a342c">business_date = 2026-10-12</text>
     ${sqlFan}
     ${boxes}
     ${toGate}
